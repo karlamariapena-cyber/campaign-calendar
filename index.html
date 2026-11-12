@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Launch & Campaign Calendar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: summary first (Today / Next / Overdue), then a calm month grid; colour = campaign, solid pill = live/ends */
+:root{
+ --bg:#f5f6f8;--surface:#ffffff;--ink:#15171c;--muted:#6a707c;--line:#e4e6eb;--accent:#e5484d;
+ --launch:#1e8a5a;--cab:#2563eb;--board:#7c3aed;--pfh:#d9730d;
+ --display:'Manrope',system-ui,-apple-system,'Segoe UI',sans-serif;
+ --body:'Figtree',system-ui,-apple-system,'Segoe UI',sans-serif;
+ color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+ --bg:#111317;--surface:#191c21;--ink:#eceef2;--muted:#9aa1ad;--line:#2a2e36;--accent:#ff6b6f;
+ --launch:#3fbf85;--cab:#6b9bff;--board:#a98bff;--pfh:#f5a04a;color-scheme:dark}}
+:root[data-theme="dark"]{
+ --bg:#111317;--surface:#191c21;--ink:#eceef2;--muted:#9aa1ad;--line:#2a2e36;--accent:#ff6b6f;
+ --launch:#3fbf85;--cab:#6b9bff;--board:#a98bff;--pfh:#f5a04a;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1320px;margin:0 auto;padding:28px 24px 48px;display:flex;flex-direction:column;gap:22px}
+.launch{--c:var(--launch)}.cab{--c:var(--cab)}.board{--c:var(--board)}.pfh{--c:var(--pfh)}
+.tint{background:color-mix(in srgb,var(--c) 11%,var(--surface))}
+h1,h2,h3{font-family:var(--display);margin:0;text-wrap:balance}
+/* header */
+.top{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.top h1{font-size:28px;font-weight:800;letter-spacing:-.02em}
+.top p{margin:4px 0 0;color:var(--muted);font-size:14px}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:13.5px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--c);flex:none}
+/* today */
+.today{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:16px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 18px 12px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.panel h2{font-size:20px;font-weight:800;letter-spacing:-.01em}
+.panel h3{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:8px}
+.panel.main{border-top:4px solid var(--accent)}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.count{background:var(--line);color:var(--ink);border-radius:999px;padding:1px 8px;font-size:12px;letter-spacing:0}
+.count.warn{background:color-mix(in srgb,var(--accent) 16%,var(--surface));color:var(--accent)}
+.daylabel{font-size:13px;font-weight:600;color:var(--muted);margin-top:6px}
+.task{display:flex;gap:10px;align-items:flex-start;padding:9px 11px;border-radius:10px;cursor:pointer}
+.task .dot{margin-top:5px}
+.task .what{font-weight:600}
+.task .who{font-size:12.5px;color:var(--muted);margin-top:1px}
+.task.ms{background:var(--c);color:#fff}.task.ms .dot{background:#fff}.task.ms .who{color:rgba(255,255,255,.85)}
+.none{color:var(--muted);font-size:14px;padding:6px 0}
+.scroll{max-height:420px;overflow:auto;display:flex;flex-direction:column;gap:6px;padding-right:2px}
+/* controls */
+.bar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.months{display:flex;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:3px;gap:2px}
+.months button{border:0;background:none;color:var(--muted);font:600 14px var(--body);padding:7px 14px;border-radius:7px;cursor:pointer}
+.months button.on{background:var(--ink);color:var(--surface)}
+.chips{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.chip{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:500 13.5px var(--body);padding:6px 11px;border-radius:999px;cursor:pointer}
+.chip.off{opacity:.4}.chip.off .dot{background:var(--muted)}
+.toggle{display:inline-flex;align-items:center;gap:8px;font:500 13.5px var(--body);color:var(--ink);cursor:pointer;margin-left:6px;border:0;background:none;padding:6px 4px}
+.sw{width:32px;height:18px;border-radius:999px;background:var(--line);position:relative;transition:background .15s}
+.sw:after{content:"";position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:var(--surface);box-shadow:0 1px 2px rgba(0,0,0,.25);transition:left .15s}
+.toggle[aria-pressed="true"] .sw{background:var(--ink)}.toggle[aria-pressed="true"] .sw:after{left:16px}
+button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+/* calendar */
+.calbox{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow-x:auto}
+.cal{display:grid;grid-template-columns:repeat(5,minmax(150px,1fr)) repeat(2,minmax(84px,.55fr));min-width:960px}
+.dow{font:700 12px var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:12px 10px;border-bottom:1px solid var(--line)}
+.cell{min-height:118px;padding:8px 8px 10px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:4px;min-width:0}
+.cell:nth-child(7n){border-right:0}
+.cell.wk{background:color-mix(in srgb,var(--bg) 60%,var(--surface))}
+.cell.out{background:var(--bg)}
+.num{font:700 14px var(--display);color:var(--muted);width:26px;height:26px;display:grid;place-items:center;border-radius:50%;margin:-2px 0 2px -2px;font-variant-numeric:tabular-nums}
+.cell.today .num{background:var(--accent);color:#fff}
+.ev{display:flex;gap:6px;align-items:flex-start;font-size:12.5px;line-height:1.3;padding:4px 7px;border-radius:6px;cursor:pointer;overflow-wrap:anywhere}
+.ev .dot{width:7px;height:7px;margin-top:4px}
+.ev.ms{background:var(--c);color:#fff;font-weight:600}.ev.ms .dot{background:#fff}
+.ev.ms.end{background:var(--surface);color:var(--c);box-shadow:inset 0 0 0 1.5px var(--c)}.ev.ms.end .dot{background:var(--c)}
+.ev.done,.task.done{opacity:.55}.ev.done .t{text-decoration:line-through}
+.ev.skip{opacity:.4}.ev.skip .t{text-decoration:line-through}
+.prep-off .cal .Internal{display:none}
+.hide{display:none!important}
+/* notes */
+.notes{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.notes ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;color:var(--ink)}
+.notes li b{font-weight:600}
+.small{font-size:13.5px;color:var(--muted)}
+/* popover */
+#tip{position:fixed;z-index:20;max-width:300px;background:var(--ink);color:var(--surface);border-radius:10px;padding:10px 12px;font-size:13.5px;line-height:1.4;box-shadow:0 8px 24px rgba(0,0,0,.2);display:none;pointer-events:none}
+#tip .k{opacity:.7;font-size:12.5px}
+@media (max-width:900px){.today{grid-template-columns:1fr}.notes{grid-template-columns:1fr}}
+@media (max-width:480px){.wrap{padding:18px 16px 36px}.top h1{font-size:23px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media print{.bar .chips,.toggle{display:none}body{background:#fff}}
+</style></head><body>
+<div class="wrap prep-off" id="app">
+ <header class="top">
+  <div>
+   <h1>Launch &amp; Campaign Calendar</h1>
+   <p>PGS marketing · Oct 2026 – Jan 2027 · Plan updated Nov 12, 2026 · Today’s view updates by itself</p>
+  </div>
+  <div class="legend">
+   <span class="launch"><i class="dot"></i>New game launches</span>
+   <span class="cab"><i class="dot"></i>Cabinet sales</span>
+   <span class="board"><i class="dot"></i>Board sales (pending)</span>
+   <span class="pfh"><i class="dot"></i>PFH kiosk offer (pending)</span>
+  </div>
+ </header>
+
+ <section class="today" aria-label="Today">
+  <div class="panel main"><div class="eyebrow">Today</div><h2 id="tdate"></h2><div id="tlist" class="scroll"></div></div>
+  <div class="panel"><h3>Coming up</h3><div id="nlist" class="scroll"></div></div>
+  <div class="panel"><h3>Still open <span class="count" id="ocount">0</span></h3><div id="olist" class="scroll"></div></div>
+ </section>
+
+ <div class="bar">
+  <div class="months" id="months" role="tablist" aria-label="Month"></div>
+  <div class="chips" id="chips">
+   <button class="toggle" id="prep" aria-pressed="false"><span class="sw"></span>Show prep tasks</button>
+  </div>
+ </div>
+
+ <div class="calbox"><div class="cal" id="cal"></div></div>
+
+ <section class="notes">
+  <div class="panel">
+   <h3>How to read it</h3>
+   <ul class="small">
+    <li>Colour shows the campaign. A solid bar means it <b>goes live</b>; an outlined bar means it <b>ends</b>.</li>
+    <li>The calendar shows key dates only. Turn on <b>Show prep tasks</b> to see internal work.</li>
+    <li>Faded and crossed out means done or skipped. Hover or tap any item for owner, status and notes.</li>
+    <li><b>Pending</b> means dates are planned but not final until the offer is signed off.</li>
+   </ul>
+  </div>
+  <div class="panel">
+   <h3>Notes</h3>
+   <ul class="small">
+    <li><b>Cabinet sales:</b> both emails go to every customer (horizontal Nov 17, vertical Nov 19). Mailer lands Nov 23. Pricing ends Dec 4.</li>
+    <li><b>Board sales:</b> starts Dec 8, after cabinets end. Offer ends Dec 18.</li>
+    <li><b>PFH kiosk offer:</b> royalty-free until the kiosk pays for itself. Teaser and mailer Nov 28, launch eblast Dec 1, sales calls Dec 2–4, demos Dec 8–18, last-chance eblast Dec 15. Offer ends Dec 31. New distributors (Baniella and Premieros lists) get their own intro email and calls.</li>
+    <li><b>Pending campaigns</b> (PFH and Board) use the same channels as Cabinet sales: LinkedIn, eblast, calls, personal email, mailer, reminder and last-chance follow-up.</li>
+    <li><b>Sales load:</b> Dec 9–18 has board and PFH calls running together, on separate days.</li>
+    <li><b>Busy days:</b> Nov 23 (Jewels live + cabinet mailer) and Dec 1 (holiday games email, PFH launch eblast and cabinet calls).</li>
+    <li>Robin’s Arrow ends Dec 10. Snow Birds goes live Nov 30 only if ready (Suki confirms Nov 20). Blades of Fortune and Viking Voyage Jan 1 still to be confirmed.</li>
+   </ul>
+  </div>
+ </section>
+</div>
+<div id="tip" role="tooltip"></div>
+<script>
+const N=(date,game,task,aud,owner,status,notes)=>({date,game,task,aud,owner:owner||"",status:status||"Not started",notes:notes||""});
+const ITEMS=[
+N("2026-10-23","Lanterns Rising","Game facts confirmed","Internal","Karla","Done"),
+N("2026-10-26","Lanterns Rising","Assets: trailer, screenshots, promo art","Internal","Amer","Done","Trailer skipped"),
+N("2026-10-26","Lanterns Rising","Sales sheet (PDF) + launch package link","Internal","Amer / Karla","Done"),
+N("2026-10-28","Lanterns Rising","Sales email to operators & distributors","Distributors","Karla","Done"),
+N("2026-10-28","Lanterns Rising","Teaser social post","Players","Karla","Skip"),
+N("2026-10-30","Robin's Arrow","Game facts confirmed","Internal","Karla","Done"),
+N("2026-11-02","Lanterns Rising","GAME LIVE","—","Karla","Milestone"),
+N("2026-11-02","Lanterns Rising","Launch email to distributors","Distributors","Karla","Done"),
+N("2026-11-02","Lanterns Rising","VGT + LinkedIn posts","Distributors","Karla","Done"),
+N("2026-11-02","Lanterns Rising","Player social post","Players","Karla","Skip"),
+N("2026-11-02","Lanterns Rising","Player SMS","Players","Amer / Suki","Skip"),
+N("2026-11-02","Robin's Arrow","Assets: trailer, screenshots, promo art","Internal","Amer","Done","Screenshots skipped"),
+N("2026-11-02","Robin's Arrow","Sales sheet (PDF) + launch package link","Internal","Amer / Karla","Done"),
+N("2026-11-04","Robin's Arrow","Sales email to operators & distributors","Distributors","Karla","Done"),
+N("2026-11-04","Robin's Arrow","Teaser social post","Players","Karla","Done"),
+N("2026-11-09","Robin's Arrow","GAME LIVE","—","Karla","Milestone"),
+N("2026-11-09","Robin's Arrow","Launch email to distributors","Distributors","Karla","Done"),
+N("2026-11-09","Robin's Arrow","VGT + LinkedIn posts","Distributors","Karla","Done"),
+N("2026-11-09","Robin's Arrow","Player social post","Players","Karla","Done"),
+N("2026-11-09","Robin's Arrow","Player SMS","Players","Amer / Suki","Skip","NO SMS yet"),
+N("2026-11-13","Jewels of Cleopatra","Game facts confirmed","Internal","Karla","Done","Plan says no open questions"),
+N("2026-11-13","Jewels of Cleopatra","Assets: provider pack, trailer, screenshots","Internal","Amer"),
+N("2026-11-16","Jewels of Cleopatra","Game sheet for operators","Internal","Amer / Karla"),
+N("2026-11-17","Jewels of Cleopatra","Social + email graphics","Internal","Amer"),
+N("2026-11-18","Jewels of Cleopatra","'Coming Nov 23' sales email","Distributors","Karla","","Ready-made email in the launch plan"),
+N("2026-11-20","Snow Birds","Confirm it's ready to launch","Internal","Suki","","If not ready, change the launch date"),
+N("2026-11-20","Snow Birds","Game facts confirmed","Internal","Karla"),
+N("2026-11-21","Santa's Gift Hunt","Game facts confirmed","Internal","Karla"),
+N("2026-11-23","Jewels of Cleopatra","GAME LIVE","—","","Milestone"),
+N("2026-11-23","Jewels of Cleopatra","'Live now' email to distributors → COMBINED","Distributors","Karla","Skip"),
+N("2026-11-23","Jewels of Cleopatra","VGT + LinkedIn posts","Distributors","Karla"),
+N("2026-11-23","Jewels of Cleopatra","Player launch post with trailer","Players","Karla"),
+N("2026-11-23","Jewels of Cleopatra","Player SMS","Players","Amer / Suki","Waiting for SMS","Drafted and ready"),
+N("2026-11-23","Snow Birds","Assets: trailer, screenshots, promo art","Internal","Amer"),
+N("2026-11-23","Snow Birds","Sales sheet (PDF)","Internal","Amer / Karla","","All sends are combined with Santa's Gift Hunt"),
+N("2026-11-24","Santa's Gift Hunt","Assets: trailer, screenshots, promo art","Internal","Amer"),
+N("2026-11-24","Santa's Gift Hunt","Sales sheet (PDF) + launch package link","Internal","Amer / Karla"),
+N("2026-11-25","Jewels of Cleopatra","Feature post (one light post over Thanksgiving)","Players","Karla"),
+N("2026-11-26","Santa's Gift Hunt","COMBINED sales email: Santa's Gift Hunt + Snow Birds","Distributors","Sales reps","","One email for both holiday games"),
+N("2026-11-30","Snow Birds","GAME LIVE","—","","Milestone"),
+N("2026-11-30","Lanterns Rising","4-week check-in","Internal","Shemal","In progress","4 weeks = Nov 30 (old sheet said Nov 23)"),
+N("2026-12-01","Santa's Gift Hunt","GAME LIVE","—","","Milestone"),
+N("2026-12-01","Santa's Gift Hunt","COMBINED launch email to distributors (both games)","Distributors","Karla"),
+N("2026-12-01","Santa's Gift Hunt","VGT + LinkedIn posts (both games)","Distributors","Karla"),
+N("2026-12-01","Santa's Gift Hunt","Player social: holiday games are here","Players","Karla"),
+N("2026-12-01","Santa's Gift Hunt","Player SMS (both games)","Players","Amer / Suki","Waiting for SMS"),
+N("2026-12-07","Robin's Arrow","Last chance: email to distributors","Distributors","Karla"),
+N("2026-12-07","Robin's Arrow","4-week check-in","Internal","Shemal"),
+N("2026-12-10","Robin's Arrow","GAME ENDS","—","","Milestone"),
+N("2026-12-14","Blades of Fortune","Confirm launch date and game facts","Internal",""),
+N("2026-12-14","Viking Voyage","Confirm launch date and game facts","Internal",""),
+N("2026-12-21","Blades of Fortune","Sales sheet (PDF) + assets","Internal",""),
+N("2026-12-21","Blades of Fortune","Sales email to operators & distributors","Distributors","","","Send before the holiday break"),
+N("2026-12-21","Viking Voyage","Sales sheet (PDF) + assets","Internal",""),
+N("2026-12-21","Viking Voyage","Sales email to operators & distributors","Distributors","","","Send before the holiday break"),
+N("2027-01-01","Blades of Fortune","GAME LIVE","—","","Milestone"),
+N("2027-01-01","Viking Voyage","GAME LIVE","—","","Milestone"),
+N("2027-01-12","Santa's Gift Hunt","Last chance: email to distributors (both games)","Distributors","Karla"),
+N("2027-01-15","Santa's Gift Hunt","GAME ENDS","—","","Milestone"),
+N("2027-01-15","Snow Birds","GAME ENDS","—","","Milestone"),
+// PFH kiosk payback offer (pending) - from "PFH Kiosk Payback Program - Marketing Plan"
+N("2026-11-13","PFH Kiosk","Distributor list: new vs. existing (past + current)","Internal","Suki","In progress","Same billing list Michael asked Suki for"),
+N("2026-11-13","PFH Kiosk","Confirm offer terms: $3,999 + royalty waiver","Internal","Greg / Fern","Done"),
+N("2026-11-16","PFH Kiosk","Pick the mailer, confirm print lead time, pull distributor mailing list","Internal","Marketing"),
+N("2026-11-16","PFH Kiosk","Demo video + screenshots of new PFH","Internal","Amer"),
+N("2026-11-20","PFH Kiosk","Build new-distributor list (Baniella + Premieros)","Internal","Marketing"),
+N("2026-11-23","PFH Kiosk","Remove existing customers from new-distributor list","Internal","Sales"),
+N("2026-11-24","PFH Kiosk","New distributors: LinkedIn connection requests (Nov 24–27)","Distributors","Sales reps"),
+N("2026-11-28","PFH Kiosk","Teaser email + social post","Distributors","Marketing","","\"Something big is about to pay off. Watch your mailbox.\""),
+N("2026-11-28","PFH Kiosk","Mailer drops in the mail (+ insert for new distributors)","Distributors","Marketing"),
+N("2026-12-01","PFH Kiosk","CAMPAIGN LIVE","—","","Milestone"),
+N("2026-12-01","PFH Kiosk","Launch eblast with full offer + intro email to new distributors","Distributors","Marketing"),
+N("2026-12-02","PFH Kiosk","Sales: call every distributor, book demos (Dec 2–4)","Distributors","Sales reps","","\"Did you get our mailer?\""),
+N("2026-12-03","PFH Kiosk","New distributors: intro calls (Dec 3–4)","Distributors","Sales reps"),
+N("2026-12-07","PFH Kiosk","Sales: follow-up email with demo link to anyone not reached","Distributors","Sales reps"),
+N("2026-12-08","PFH Kiosk","Sales: run demos and take orders (Dec 8–18)","Distributors","Sales reps"),
+N("2026-12-09","PFH Kiosk","New distributors: follow-up email with demo link","Distributors","Sales reps"),
+N("2026-12-15","PFH Kiosk","Last-chance eblast: offer ends Dec 31 (both lists)","Distributors","Marketing"),
+N("2026-12-16","PFH Kiosk","Sales: final calls to open leads (Dec 16–18)","Distributors","Sales reps"),
+N("2026-12-31","PFH Kiosk","OFFER ENDS","—","","Milestone"),
+N("2027-01-03","PFH Kiosk","Results: demos booked, kiosks sold","Internal",""),
+// Cabinet sales
+N("2026-11-12","Cabinet Sales","Confirm pricing, stock and end date","Internal","Fern / Karla"),
+N("2026-11-13","Cabinet Sales","Pick 6 featured games; customer list with addresses","Internal","Fern / Sales"),
+N("2026-11-16","Cabinet Sales","Build both eblasts, mailer art, test sends","Internal","Karla"),
+N("2026-11-16","Cabinet Sales","LinkedIn teaser","Distributors","Karla"),
+N("2026-11-17","Cabinet Sales","CAMPAIGN LIVE","—","","Milestone"),
+N("2026-11-17","Cabinet Sales","Horizontal eblast to everyone + LinkedIn","Distributors","Karla"),
+N("2026-11-17","Cabinet Sales","Mailer to print","Internal","Karla"),
+N("2026-11-18","Cabinet Sales","Sales: call everyone who clicked","Distributors","Sales reps"),
+N("2026-11-19","Cabinet Sales","Vertical eblast to everyone + LinkedIn","Distributors","Karla"),
+N("2026-11-20","Cabinet Sales","Mailer ships; Sales: personal email to everyone","Distributors","Karla / Sales reps"),
+N("2026-11-23","Cabinet Sales","Mailer lands","Distributors",""),
+N("2026-11-24","Cabinet Sales","Sales calls to every customer (Nov 24–25)","Distributors","Sales reps"),
+N("2026-11-30","Cabinet Sales","Reminder eblast: pricing ends Friday","Distributors","Karla"),
+N("2026-12-01","Cabinet Sales","Sales: last-chance calls (Dec 1–3)","Distributors","Sales reps"),
+N("2026-12-04","Cabinet Sales","OFFER ENDS","—","","Milestone"),
+N("2026-12-04","Cabinet Sales","Sales: last-chance email","Distributors","Sales reps"),
+N("2026-12-07","Cabinet Sales","Results + wrap-up","Internal","Karla"),
+// Board sales (pending)
+N("2026-11-20","Board Sales","Confirm offer; customer list in Groups A/B/C","Internal","Fern / Sales"),
+N("2026-11-24","Board Sales","Mailer to print","Internal","Karla"),
+N("2026-12-02","Board Sales","Game collection page live","Internal","Amer"),
+N("2026-12-04","Board Sales","Tracker ready + test sends","Internal","Karla"),
+N("2026-12-07","Board Sales","LinkedIn teaser","Distributors","Karla"),
+N("2026-12-08","Board Sales","CAMPAIGN LIVE","—","","Milestone"),
+N("2026-12-08","Board Sales","Eblast to Groups A/B/C + LinkedIn","Distributors","Karla"),
+N("2026-12-09","Board Sales","Sales: call everyone who clicked","Distributors","Sales reps"),
+N("2026-12-10","Board Sales","Sales: personal email; mailer ships","Distributors","Sales reps / Karla"),
+N("2026-12-14","Board Sales","Mailer lands + LinkedIn game spotlight","Distributors","Karla"),
+N("2026-12-15","Board Sales","Sales calls to every customer (Dec 15–16)","Distributors","Sales reps"),
+N("2026-12-16","Board Sales","Eblast 2: offer ends Friday + LinkedIn","Distributors","Karla"),
+N("2026-12-17","Board Sales","Sales: last-chance calls","Distributors","Sales reps"),
+N("2026-12-18","Board Sales","OFFER ENDS","—","","Milestone"),
+N("2026-12-18","Board Sales","Sales: last-chance email","Distributors","Sales reps"),
+N("2026-12-21","Board Sales","Results + wrap-up","Internal","Karla")
+];
+
+const TYPE={"Cabinet Sales":"cab","Board Sales":"board","PFH Kiosk":"pfh"};
+const TNAME={launch:"New game launches",cab:"Cabinet sales",board:"Board sales",pfh:"PFH kiosk offer"};
+const PENDING={board:1,pfh:1};
+ITEMS.forEach((it,i)=>{it.i=i;it.type=TYPE[it.game]||"launch";it.ms=it.status=="Milestone";it.end=/ENDS/.test(it.task)});
+const pad=n=>String(n).padStart(2,"0");
+const iso=(y,m,d)=>y+"-"+pad(m+1)+"-"+pad(d);
+const now=new Date();const TODAY=iso(now.getFullYear(),now.getMonth(),now.getDate());
+const toD=k=>{const [y,m,d]=k.split("-").map(Number);return new Date(y,m-1,d)};
+const fmt=(k,o)=>toD(k).toLocaleDateString("en-US",o);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const name=it=>it.game+(PENDING[it.type]?" (pending)":"");
+const label=it=>it.ms?(it.end?(it.task.includes("OFFER")?"Offer ends":"Ends"):"Goes live"):it.task;
+const byDate={};ITEMS.forEach(it=>(byDate[it.date]=byDate[it.date]||[]).push(it));
+const ORD={launch:0,pfh:1,cab:2,board:3};
+Object.values(byDate).forEach(a=>a.sort((x,y)=>(y.ms-x.ms)||(ORD[x.type]-ORD[y.type])));
+const stCls=it=>it.status=="Done"?" done":it.status=="Skip"?" skip":"";
+
+/* Today panels */
+const task=(it,showDate)=>{
+ const who=[showDate?fmt(it.date,{weekday:"short",month:"short",day:"numeric"}):"",it.aud=="Internal"?"Prep":"",it.owner,it.ms?"":it.status].filter(Boolean).join(" · ");
+ return `<div class="task ${it.type} ${it.aud}${it.ms?" ms":" tint"}${stCls(it)}" data-i="${it.i}"><i class="dot"></i><div><div class="what">${esc(name(it))}: ${esc(label(it))}</div>${who?`<div class="who">${esc(who)}</div>`:""}</div></div>`};
+const list=a=>a&&a.length?a.map(x=>task(x)).join(""):`<div class="none">Nothing scheduled.</div>`;
+document.getElementById("tdate").textContent=fmt(TODAY,{weekday:"long",month:"long",day:"numeric"});
+document.getElementById("tlist").innerHTML=list(byDate[TODAY]);
+const days=[];{const d=toD(TODAY);let g=0;while(days.length<3&&g++<40){d.setDate(d.getDate()+1);const k=iso(d.getFullYear(),d.getMonth(),d.getDate());if(byDate[k]||d.getDay()%6)days.push(k)}}
+document.getElementById("nlist").innerHTML=days.map(k=>`<div class="daylabel">${fmt(k,{weekday:"long",month:"short",day:"numeric"})}</div>`+list(byDate[k])).join("");
+const open=ITEMS.filter(it=>it.date<TODAY&&!it.ms&&!["Done","Skip"].includes(it.status)).sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:0);
+const oc=document.getElementById("ocount");oc.textContent=open.length;if(open.length)oc.classList.add("warn");
+document.getElementById("olist").innerHTML=open.length?open.map(x=>task(x,true)).join(""):`<div class="none">All caught up.</div>`;
+
+/* Month grid */
+const MONTHS=[[2026,9],[2026,10],[2026,11],[2027,0]];
+const MN=["January","February","March","April","May","June","July","August","September","October","November","December"];
+const cal=document.getElementById("cal"),mb=document.getElementById("months");
+function render(k){
+ const [y,m]=MONTHS[k];
+ [...mb.children].forEach((b,j)=>{b.classList.toggle("on",j==k);b.setAttribute("aria-selected",j==k)});
+ let h=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].map(d=>`<div class="dow">${d}</div>`).join("");
+ const first=(new Date(y,m,1).getDay()+6)%7,n=new Date(y,m+1,0).getDate(),total=Math.ceil((first+n)/7)*7;
+ for(let c=0;c<total;c++){
+  const d=c-first+1,col=c%7;
+  if(d<1||d>n){h+=`<div class="cell out"></div>`;continue}
+  const key=iso(y,m,d);
+  h+=`<div class="cell${col>=5?" wk":""}${key==TODAY?" today":""}"><span class="num">${d}</span>`;
+  (byDate[key]||[]).forEach(it=>{
+   h+=it.ms
+    ?`<div class="ev ms ${it.type}${it.end?" end":""}" data-i="${it.i}"><i class="dot"></i><span>${esc(label(it))}: ${esc(name(it))}</span></div>`
+    :`<div class="ev tint ${it.type} ${it.aud}${stCls(it)}" data-i="${it.i}"><i class="dot"></i><span class="t">${esc(it.game)}: ${esc(it.task)}</span></div>`;
+  });
+  h+=`</div>`;
+ }
+ cal.innerHTML=h;applyFilters();
+}
+MONTHS.forEach(([y,m],k)=>{const b=document.createElement("button");b.textContent=MN[m].slice(0,3)+" "+y;b.setAttribute("role","tab");b.onclick=()=>render(k);mb.appendChild(b)});
+let start=MONTHS.findIndex(([y,m])=>TODAY.slice(0,7)==iso(y,m,1).slice(0,7));if(start<0)start=TODAY<"2026-10-01"?0:MONTHS.length-1;
+
+/* Filters */
+const off=new Set(),chips=document.getElementById("chips"),prepBtn=document.getElementById("prep");
+Object.entries(TNAME).forEach(([t,l])=>{const b=document.createElement("button");b.className="chip "+t;b.innerHTML=`<i class="dot"></i>${l}`;b.setAttribute("aria-pressed","true");
+ b.onclick=()=>{off.has(t)?off.delete(t):off.add(t);b.classList.toggle("off",off.has(t));b.setAttribute("aria-pressed",!off.has(t));applyFilters()};chips.insertBefore(b,prepBtn)});
+function applyFilters(){document.querySelectorAll("[data-i]").forEach(el=>el.classList.toggle("hide",off.has(ITEMS[+el.dataset.i].type)))}
+prepBtn.onclick=()=>{const on=prepBtn.getAttribute("aria-pressed")!="true";prepBtn.setAttribute("aria-pressed",on);document.getElementById("app").classList.toggle("prep-off",!on)};
+render(start);
+
+/* Details on hover / tap */
+const tip=document.getElementById("tip");
+function showTip(el,x,y){const it=ITEMS[+el.dataset.i];
+ tip.innerHTML=`<b>${esc(name(it))}</b><br>${esc(label(it))}<br><span class="k">${esc([fmt(it.date,{weekday:"short",month:"short",day:"numeric"}),TNAME[it.type],it.aud&&it.aud!="—"?it.aud:"",it.owner?"Owner: "+it.owner:"",it.ms?"":it.status].filter(Boolean).join(" · "))}</span>${it.notes?"<br>"+esc(it.notes):""}`;
+ tip.style.display="block";tip.style.left=Math.max(8,Math.min(x+14,innerWidth-310))+"px";tip.style.top=Math.min(y+14,innerHeight-tip.offsetHeight-8)+"px"}
+document.addEventListener("mousemove",e=>{const el=e.target.closest("[data-i]");el?showTip(el,e.clientX,e.clientY):tip.style.display="none"});
+document.addEventListener("click",e=>{const el=e.target.closest("[data-i]");el?showTip(el,e.clientX,e.clientY):tip.style.display="none"});
+</script></body></html>
