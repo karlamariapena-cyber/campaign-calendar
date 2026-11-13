@@ -8,22 +8,22 @@
 /* Layout idea: summary first (Today / Next / Overdue), then a calm month grid; colour = campaign, solid pill = live/ends */
 :root{
  --bg:#f5f6f8;--surface:#ffffff;--ink:#15171c;--muted:#6a707c;--line:#e4e6eb;--accent:#e5484d;
- --launch:#1e8a5a;--cab:#2563eb;--board:#7c3aed;--pfh:#d9730d;--hol:#d6336c;
+ --launch:#1e8a5a;--cab:#2563eb;--board:#7c3aed;--pfh:#d9730d;--hol:#d6336c;--plan:#0f766e;
  --display:'Manrope',system-ui,-apple-system,'Segoe UI',sans-serif;
  --body:'Figtree',system-ui,-apple-system,'Segoe UI',sans-serif;
  color-scheme:light;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
  --bg:#111317;--surface:#191c21;--ink:#eceef2;--muted:#9aa1ad;--line:#2a2e36;--accent:#ff6b6f;
- --launch:#3fbf85;--cab:#6b9bff;--board:#a98bff;--pfh:#f5a04a;--hol:#f06595;color-scheme:dark}}
+ --launch:#3fbf85;--cab:#6b9bff;--board:#a98bff;--pfh:#f5a04a;--hol:#f06595;--plan:#2dd4bf;color-scheme:dark}}
 :root[data-theme="dark"]{
  --bg:#111317;--surface:#191c21;--ink:#eceef2;--muted:#9aa1ad;--line:#2a2e36;--accent:#ff6b6f;
- --launch:#3fbf85;--cab:#6b9bff;--board:#a98bff;--pfh:#f5a04a;--hol:#f06595;color-scheme:dark}
+ --launch:#3fbf85;--cab:#6b9bff;--board:#a98bff;--pfh:#f5a04a;--hol:#f06595;--plan:#2dd4bf;color-scheme:dark}
 *{box-sizing:border-box}
 html,body{margin:0}
 body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased}
 .wrap{max-width:1320px;margin:0 auto;padding:28px 24px 48px;display:flex;flex-direction:column;gap:22px}
-.launch{--c:var(--launch)}.cab{--c:var(--cab)}.board{--c:var(--board)}.pfh{--c:var(--pfh)}.hol{--c:var(--hol)}
+.launch{--c:var(--launch)}.cab{--c:var(--cab)}.board{--c:var(--board)}.pfh{--c:var(--pfh)}.hol{--c:var(--hol)}.plan{--c:var(--plan)}
 .tint{background:color-mix(in srgb,var(--c) 11%,var(--surface))}
 h1,h2,h3{font-family:var(--display);margin:0;text-wrap:balance}
 /* header */
@@ -105,7 +105,8 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
    <span class="cab"><i class="dot"></i>Cabinet sales</span>
    <span class="board"><i class="dot"></i>Board sales (pending)</span>
    <span class="pfh"><i class="dot"></i>PFH kiosk offer (pending)</span>
-   <span class="hol"><i class="dot"></i>Holiday cards &amp; gifts</span>
+   <span class="hol"><i class="dot"></i>Holiday</span>
+   <span class="plan"><i class="dot"></i>Other marketing</span>
   </div>
  </header>
 
@@ -143,6 +144,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
     <li><b>Pending campaigns</b> (PFH and Board) use the same channels as Cabinet sales: LinkedIn, eblast, calls, personal email, mailer, reminder and last-chance follow-up.</li>
     <li><b>Sales load:</b> Dec 9–18 has board and PFH calls running together, on separate days.</li>
     <li><b>Holiday cards:</b> cards arrive Nov 17. Get them signed and shipped to the distributor by Nov 20 so they go out with the holiday gifts.</li>
+    <li><b>Other marketing</b> (teal): 2027 plan and budget, Amusement Expo prep, YES follow-ups, PFH player sends and monthly reports. Dates marked "to confirm" can move.</li>
     <li><b>Busy days:</b> Nov 23 (Jewels live + cabinet mailer) and Dec 1 (holiday games email, PFH launch eblast and cabinet calls).</li>
     <li>Robin’s Arrow ends Dec 10. Snow Birds goes live Nov 30 only if ready (Suki confirms Nov 20). Blades of Fortune and Viking Voyage Jan 1 still to be confirmed.</li>
    </ul>
@@ -237,6 +239,21 @@ N("2027-01-03","PFH Kiosk","Results: demos booked, kiosks sold","Internal",""),
 // Holiday cards
 N("2026-11-17","Holiday Cards","Christmas cards arrive at the office","Office","Karla","","Sign them Nov 17–20"),
 N("2026-11-20","Holiday Cards","DEADLINE: cards signed and shipped to the distributor","Office","Karla","","The distributor sends them out with our holiday gifts"),
+// Other marketing (added Nov 13)
+N("2026-11-18","YES","Follow up on G2E leads (email + calls)","Distributors","Karla / Faran"),
+N("2026-11-30","Reporting","November results report to Fern","Leadership","Karla","","Opens, leads and sales from each campaign"),
+N("2026-12-02","Amusement Expo 2027","Confirm budget with Fern and Greg; book booth","Leadership","Karla"),
+N("2026-12-03","PFH Players","Guest registration push: social + kiosk screens","Players","Karla / Amer","","Date to confirm"),
+N("2026-12-04","Planning","Draft 2027 marketing plan + budget","Leadership","Karla"),
+N("2026-12-10","PFH Players","SMS win-back send to lapsed + rising players","Players","Karla / Shemal","","Date to confirm"),
+N("2026-12-11","Planning","Send 2027 plan + budget to Fern and Greg","Leadership","Karla"),
+N("2026-12-17","PFH Players","Teaser: Daily Wheel + Loyalty coming soon","Players","Karla / Amer","","Date to confirm"),
+N("2026-12-17","Holiday","Holiday greeting eblast + social (distributors and players)","Distributors","Karla"),
+N("2026-12-18","Holiday","Office closure notice to customers","Distributors","Karla"),
+N("2027-01-04","Reporting","December results report to Fern","Leadership","Karla"),
+N("2027-01-05","Holiday","\"What's coming in 2027\" email","Distributors","Karla"),
+N("2027-01-13","YES","Q1 content piece: new titles for regulated markets","Distributors","Karla"),
+N("2027-01-15","Amusement Expo 2027","Booth design + asset list kickoff","Leadership","Karla / Amer"),
 // Cabinet sales
 N("2026-11-12","Cabinet Sales","Confirm pricing, stock and end date","Internal","Fern / Karla"),
 N("2026-11-13","Cabinet Sales","Pick 6 featured games; customer list with addresses","Internal","Fern / Sales"),
@@ -274,8 +291,8 @@ N("2026-12-18","Board Sales","Sales: last-chance email","Distributors","Sales re
 N("2026-12-21","Board Sales","Results + wrap-up","Internal","Karla")
 ];
 
-const TYPE={"Cabinet Sales":"cab","Board Sales":"board","PFH Kiosk":"pfh","Holiday Cards":"hol"};
-const TNAME={launch:"New game launches",cab:"Cabinet sales",board:"Board sales",pfh:"PFH kiosk offer",hol:"Holiday cards & gifts"};
+const TYPE={"Cabinet Sales":"cab","Board Sales":"board","PFH Kiosk":"pfh","Holiday Cards":"hol","Holiday":"hol","Planning":"plan","Amusement Expo 2027":"plan","YES":"plan","Reporting":"plan","PFH Players":"plan"};
+const TNAME={launch:"New game launches",cab:"Cabinet sales",board:"Board sales",pfh:"PFH kiosk offer",hol:"Holiday",plan:"Other marketing"};
 const PENDING={board:1,pfh:1};
 ITEMS.forEach((it,i)=>{it.i=i;it.type=TYPE[it.game]||"launch";it.ms=it.status=="Milestone";it.end=/ENDS/.test(it.task)});
 const pad=n=>String(n).padStart(2,"0");
@@ -287,7 +304,7 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",
 const name=it=>it.game+(PENDING[it.type]?" (pending)":"");
 const label=it=>it.ms?(it.end?(it.task.includes("OFFER")?"Offer ends":"Ends"):"Goes live"):it.task;
 const byDate={};ITEMS.forEach(it=>(byDate[it.date]=byDate[it.date]||[]).push(it));
-const ORD={hol:-1,launch:0,pfh:1,cab:2,board:3};
+const ORD={hol:-1,plan:4,launch:0,pfh:1,cab:2,board:3};
 Object.values(byDate).forEach(a=>a.sort((x,y)=>(y.ms-x.ms)||(ORD[x.type]-ORD[y.type])));
 const stCls=it=>it.status=="Done"?" done":it.status=="Skip"?" skip":"";
 
