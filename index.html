@@ -145,6 +145,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
     <li><b>Sales load:</b> Dec 9–18 has board and PFH calls running together, on separate days.</li>
     <li><b>Holiday cards:</b> cards arrive Nov 17. Get them signed and shipped to the distributor by Nov 20 so they go out with the holiday gifts.</li>
     <li><b>Other marketing</b> (teal): 2027 plan and budget, Amusement Expo prep, YES follow-ups, PFH player sends and monthly reports. Dates marked "to confirm" can move.</li>
+    <li><b>WCE website:</b> the new site is live. LinkedIn post Nov 13, eblast Nov 24.</li>
     <li><b>Busy days:</b> Nov 23 (Jewels live + cabinet mailer) and Dec 1 (holiday games email, PFH launch eblast and cabinet calls).</li>
     <li>Robin’s Arrow ends Dec 10. Snow Birds goes live Nov 30 only if ready (Suki confirms Nov 20). Blades of Fortune and Viking Voyage Jan 1 still to be confirmed.</li>
    </ul>
@@ -254,6 +255,10 @@ N("2027-01-04","Reporting","December results report to Fern","Leadership","Karla
 N("2027-01-05","Holiday","\"What's coming in 2027\" email","Distributors","Karla"),
 N("2027-01-13","YES","Q1 content piece: new titles for regulated markets","Distributors","Karla"),
 N("2027-01-15","Amusement Expo 2027","Booth design + asset list kickoff","Leadership","Karla / Amer"),
+// WCE website launch (added Nov 13)
+N("2026-11-13","WCE Website","LinkedIn post: our new website is live","Distributors","Karla","","Site is already live; post today"),
+N("2026-11-16","WCE Website","Write eblast + pull site screenshots","Internal","Karla / Amer"),
+N("2026-11-24","WCE Website","Eblast: tour the new WCE website","Distributors","Karla","","Clear of the cabinet emails on Nov 17 and 19"),
 // Cabinet sales
 N("2026-11-12","Cabinet Sales","Confirm pricing, stock and end date","Internal","Fern / Karla"),
 N("2026-11-13","Cabinet Sales","Pick 6 featured games; customer list with addresses","Internal","Fern / Sales"),
@@ -291,7 +296,7 @@ N("2026-12-18","Board Sales","Sales: last-chance email","Distributors","Sales re
 N("2026-12-21","Board Sales","Results + wrap-up","Internal","Karla")
 ];
 
-const TYPE={"Cabinet Sales":"cab","Board Sales":"board","PFH Kiosk":"pfh","Holiday Cards":"hol","Holiday":"hol","Planning":"plan","Amusement Expo 2027":"plan","YES":"plan","Reporting":"plan","PFH Players":"plan"};
+const TYPE={"Cabinet Sales":"cab","Board Sales":"board","PFH Kiosk":"pfh","Holiday Cards":"hol","Holiday":"hol","Planning":"plan","Amusement Expo 2027":"plan","YES":"plan","Reporting":"plan","PFH Players":"plan","WCE Website":"plan"};
 const TNAME={launch:"New game launches",cab:"Cabinet sales",board:"Board sales",pfh:"PFH kiosk offer",hol:"Holiday",plan:"Other marketing"};
 const PENDING={board:1,pfh:1};
 ITEMS.forEach((it,i)=>{it.i=i;it.type=TYPE[it.game]||"launch";it.ms=it.status=="Milestone";it.end=/ENDS/.test(it.task)});
