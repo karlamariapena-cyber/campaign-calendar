@@ -8,22 +8,22 @@
 /* Layout idea: summary first (Today / Next / Overdue), then a calm month grid; colour = campaign, solid pill = live/ends */
 :root{
  --bg:#f5f6f8;--surface:#ffffff;--ink:#15171c;--muted:#6a707c;--line:#e4e6eb;--accent:#e5484d;
- --launch:#1e8a5a;--cab:#2563eb;--board:#7c3aed;--pfh:#d9730d;--hol:#d6336c;--plan:#0f766e;
+ --launch:#1e8a5a;--cab:#2563eb;--board:#7c3aed;--pfh:#d9730d;--hol:#d6336c;--plan:#0f766e;--v2:#475569;
  --display:'Manrope',system-ui,-apple-system,'Segoe UI',sans-serif;
  --body:'Figtree',system-ui,-apple-system,'Segoe UI',sans-serif;
  color-scheme:light;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
  --bg:#111317;--surface:#191c21;--ink:#eceef2;--muted:#9aa1ad;--line:#2a2e36;--accent:#ff6b6f;
- --launch:#3fbf85;--cab:#6b9bff;--board:#a98bff;--pfh:#f5a04a;--hol:#f06595;--plan:#2dd4bf;color-scheme:dark}}
+ --launch:#3fbf85;--cab:#6b9bff;--board:#a98bff;--pfh:#f5a04a;--hol:#f06595;--plan:#2dd4bf;--v2:#a3b1c6;color-scheme:dark}}
 :root[data-theme="dark"]{
  --bg:#111317;--surface:#191c21;--ink:#eceef2;--muted:#9aa1ad;--line:#2a2e36;--accent:#ff6b6f;
- --launch:#3fbf85;--cab:#6b9bff;--board:#a98bff;--pfh:#f5a04a;--hol:#f06595;--plan:#2dd4bf;color-scheme:dark}
+ --launch:#3fbf85;--cab:#6b9bff;--board:#a98bff;--pfh:#f5a04a;--hol:#f06595;--plan:#2dd4bf;--v2:#a3b1c6;color-scheme:dark}
 *{box-sizing:border-box}
 html,body{margin:0}
 body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased}
 .wrap{max-width:1320px;margin:0 auto;padding:28px 24px 48px;display:flex;flex-direction:column;gap:22px}
-.launch{--c:var(--launch)}.cab{--c:var(--cab)}.board{--c:var(--board)}.pfh{--c:var(--pfh)}.hol{--c:var(--hol)}.plan{--c:var(--plan)}
+.launch{--c:var(--launch)}.cab{--c:var(--cab)}.board{--c:var(--board)}.pfh{--c:var(--pfh)}.hol{--c:var(--hol)}.plan{--c:var(--plan)}.v2{--c:var(--v2)}
 .tint{background:color-mix(in srgb,var(--c) 11%,var(--surface))}
 h1,h2,h3{font-family:var(--display);margin:0;text-wrap:balance}
 /* header */
@@ -98,10 +98,11 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
  <header class="top">
   <div>
    <h1>Launch &amp; Campaign Calendar</h1>
-   <p>PGS marketing · Oct 2026 – Jan 2027 · Plan updated Nov 19, 2026 · Today’s view updates by itself</p>
+   <p>PGS marketing · Oct 2026 – Mar 2027 · Plan updated Nov 19, 2026 · Today’s view updates by itself</p>
   </div>
   <div class="legend">
-   <span class="launch"><i class="dot"></i>New game launches</span>
+   <span class="launch"><i class="dot"></i>New games · PFH</span>
+   <span class="v2"><i class="dot"></i>New games · V2 Sweeps</span>
    <span class="cab"><i class="dot"></i>Cabinet sales</span>
    <span class="board"><i class="dot"></i>Board sales · WCE</span>
    <span class="pfh"><i class="dot"></i>PFH + kiosk relaunch</span>
@@ -143,6 +144,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
     <li><b>PFH + kiosk relaunch:</b> Dec 16 – Dec 31. Major sends Dec 16, 21, 28. Offer end date (Dec 31) not moved: confirm with Fern. Kiosks from $3,999, no royalties until the kiosk pays for itself.</li>
     <li><b>Board sales · WCE:</b> Jan 18 – 29. Major sends Jan 19 and 27. <b>YES boards</b> (Nebraska, Georgia, Ohio): launch date to set.</li>
     <li><b>Sales load:</b> one campaign at a time: Cabinets to Dec 18, PFH from Dec 16 (overlap Dec 16–18), Boards in January. Major sends at least 2 days apart.</li>
+    <li><b>V2 Sweeps</b> (slate): 9 new horizontal games, two per month. Dec 1 Pharaoh’s Quest + Fruit Splitter · Jan 1 Canada Eh Part Deux + Grand Prosperity · Feb 1 Blade of Fortune + Jewels of Cleopatra · Mar 1 Sword of Z Nudge + Nordic Paws. Hollow Graves of Riches held for next October. Order to confirm with Suki and Fern.</li>
     <li><b>Holiday cards:</b> get them signed and shipped to the distributor by Mon Nov 23. Check they can still go out with the holiday gifts.</li>
     <li><b>Other marketing</b> (teal): Amusement Expo prep, YES follow-ups, PFH SMS win-back and monthly reports. Dates marked "to confirm" can move.</li>
     <li><b>WCE website:</b> LinkedIn post and eblast Tue Nov 24, once the site is live.</li>
@@ -234,6 +236,11 @@ N("2026-12-28","PFH Kiosk","Major send 3: last-chance eblast, offer ends Dec 31"
 N("2026-12-28","PFH Kiosk","Sales: final calls (Dec 28–30)","Distributors","Sales reps"),
 N("2026-12-31","PFH Kiosk","OFFER ENDS","—","","Milestone"),
 N("2027-01-11","PFH Kiosk","Results: kiosks reactivated, kiosks sold, new distributors","Internal","Karla / Faran"),
+// V2 Sweeps: 9 new horizontal games (Suki email Nov 17). Dec and Feb swapped from Shemal's order.
+N("2026-12-01","V2 Sweeps: Pharaoh's Quest + Fruit Splitter","GAME LIVE","—","","Milestone","Proposed order with Dec and Feb swapped. Confirm with Suki and Fern. Pharaoh's Quest is a new title: check it's ready"),
+N("2027-01-01","V2 Sweeps: Canada Eh Part Deux + Grand Prosperity","GAME LIVE","—","","Milestone","Proposed order with Dec and Feb swapped. Confirm with Suki and Fern"),
+N("2027-02-01","V2 Sweeps: Blade of Fortune + Jewels of Cleopatra","GAME LIVE","—","","Milestone","Proposed order with Dec and Feb swapped. Confirm with Suki and Fern"),
+N("2027-03-01","V2 Sweeps: Sword of Z Nudge + Nordic Paws","GAME LIVE","—","","Milestone","Proposed order with Dec and Feb swapped. Confirm with Suki and Fern"),
 // Holiday cards
 N("2026-11-23","Holiday Cards","DEADLINE: cards signed and shipped to the distributor","Office","Karla","","Moved from Nov 20. Check with the distributor that they can still go out with the holiday gifts"),
 // Other marketing (added Nov 13)
@@ -279,9 +286,9 @@ N("2027-01-29","Board Sales","CAMPAIGN ENDS","—","","Milestone")
 ];
 
 const TYPE={"Cabinet Sales":"cab","Board Sales":"board","PFH Kiosk":"pfh","Holiday Cards":"hol","Holiday":"hol","Planning":"plan","Amusement Expo 2027":"plan","YES":"plan","Reporting":"plan","PFH Players":"plan","WCE Website":"plan","WCE Website":"plan"};
-const TNAME={launch:"New game launches",cab:"Cabinet sales",board:"Board sales · WCE",pfh:"PFH + kiosk relaunch",hol:"Holiday",plan:"Other marketing"};
+const TNAME={launch:"New games · PFH",v2:"New games · V2 Sweeps",cab:"Cabinet sales",board:"Board sales · WCE",pfh:"PFH + kiosk relaunch",hol:"Holiday",plan:"Other marketing"};
 const PENDING={};
-ITEMS.forEach((it,i)=>{it.i=i;it.type=TYPE[it.game]||"launch";it.ms=it.status=="Milestone";it.end=/ENDS/.test(it.task)});
+ITEMS.forEach((it,i)=>{it.i=i;it.type=TYPE[it.game]||(it.game.startsWith("V2 Sweeps")?"v2":"launch");it.ms=it.status=="Milestone";it.end=/ENDS/.test(it.task)});
 const pad=n=>String(n).padStart(2,"0");
 const iso=(y,m,d)=>y+"-"+pad(m+1)+"-"+pad(d);
 const now=new Date();const TODAY=iso(now.getFullYear(),now.getMonth(),now.getDate());
@@ -291,7 +298,7 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",
 const name=it=>it.game+(PENDING[it.type]?" (pending)":"");
 const label=it=>it.ms?(it.end?(it.task.includes("OFFER")?"Offer ends":"Ends"):"Goes live"):it.task;
 const byDate={};ITEMS.forEach(it=>(byDate[it.date]=byDate[it.date]||[]).push(it));
-const ORD={hol:-1,plan:4,launch:0,pfh:1,cab:2,board:3};
+const ORD={hol:-1,plan:4,launch:0,v2:0,pfh:1,cab:2,board:3};
 Object.values(byDate).forEach(a=>a.sort((x,y)=>(y.ms-x.ms)||(ORD[x.type]-ORD[y.type])));
 const stCls=it=>it.status=="Done"?" done":it.status=="Skip"?" skip":"";
 
@@ -309,7 +316,7 @@ const oc=document.getElementById("ocount");oc.textContent=open.length;if(open.le
 document.getElementById("olist").innerHTML=open.length?open.map(x=>task(x,true)).join(""):`<div class="none">All caught up.</div>`;
 
 /* Month grid */
-const MONTHS=[[2026,9],[2026,10],[2026,11],[2027,0]];
+const MONTHS=[[2026,9],[2026,10],[2026,11],[2027,0],[2027,1],[2027,2]];
 const MN=["January","February","March","April","May","June","July","August","September","October","November","December"];
 const cal=document.getElementById("cal"),mb=document.getElementById("months");
 function render(k){
