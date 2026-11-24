@@ -86,6 +86,46 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .notes ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;color:var(--ink)}
 .notes li b{font-weight:600}
 .small{font-size:13.5px;color:var(--muted)}
+/* top tabs + extra pages */
+.nav{display:flex;gap:4px;border-bottom:1px solid var(--line);margin:-8px 0 2px;overflow-x:auto}
+.nav a{flex:none;font:700 15px var(--display);color:var(--muted);text-decoration:none;padding:12px 16px;border-bottom:3px solid transparent;margin-bottom:-1px}
+.nav a.on{color:var(--ink);border-bottom-color:var(--accent)}
+.nav a:hover{color:var(--ink)}
+.view{display:flex;flex-direction:column;gap:22px}.view[hidden]{display:none}
+.pagehead h1{font-size:28px;font-weight:800;letter-spacing:-.02em}
+.pagehead p{margin:4px 0 0;color:var(--muted);font-size:14px;max-width:70ch}
+.tbox{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow-x:auto}
+table.grid{border-collapse:collapse;width:100%;min-width:980px;font-size:13.5px}
+.grid th,.grid td{border-bottom:1px solid var(--line);padding:8px 6px;vertical-align:middle}
+.grid thead th{font:700 12.5px var(--body);text-align:center;line-height:1.3}
+.grid .brand th{font-size:12px;letter-spacing:.08em;text-transform:uppercase;padding:8px}
+.grid .brand .wce{background:color-mix(in srgb,var(--cab) 14%,var(--surface))}
+.grid .brand .yes{background:color-mix(in srgb,#e6b800 22%,var(--surface))}
+.grid .colh th.lch{border-top:4px solid var(--c);background:color-mix(in srgb,var(--c) 9%,var(--surface))}
+.grid .colh small{display:block;font-weight:500;color:var(--muted);margin-top:2px}
+.grid .half th{font-size:11px;color:var(--muted);font-weight:600;padding:4px}
+.grid td.tac{font-weight:600;min-width:260px;max-width:360px;padding-left:14px;text-align:left}
+.grid td.c{text-align:center;width:72px;padding:6px 3px}
+.grid td.c.r{border-right:1px solid var(--line)}
+.pill{display:inline-block;font:700 11px var(--body);padding:4px 7px;border-radius:6px;color:#fff;white-space:nowrap}
+.pill.M{background:#2e86de}.pill.S{background:#e67e00}
+.grid tbody tr:hover td{background:color-mix(in srgb,var(--ink) 4%,var(--surface))}
+.trk-bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+.trk-bar .stats{display:flex;gap:8px;flex-wrap:wrap}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:13.5px}
+.stat b{font-variant-numeric:tabular-nums}
+.btn{border:1px solid var(--line);background:var(--surface);color:var(--ink);font:600 14px var(--body);padding:9px 14px;border-radius:9px;cursor:pointer;min-height:40px}
+.btn.pri{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+table.trk{border-collapse:collapse;width:100%;min-width:900px;font-size:14px}
+.trk th{font:700 12px var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:left;padding:12px 8px;border-bottom:1px solid var(--line)}
+.trk td{padding:4px 4px;border-bottom:1px solid var(--line)}
+.trk input,.trk select{width:100%;font:15px var(--body);color:var(--ink);background:transparent;border:1px solid transparent;border-radius:7px;padding:8px}
+.trk input:hover,.trk select:hover{border-color:var(--line)}
+.trk input:focus,.trk select:focus{outline:none;border-color:var(--accent);background:var(--surface)}
+.trk .del{border:0;background:none;color:var(--muted);font-size:20px;cursor:pointer;width:36px;height:36px;border-radius:50%}
+.trk .del:hover{background:var(--line);color:var(--ink)}
+.empty{padding:28px;text-align:center;color:var(--muted)}
+.warnnote{font-size:13.5px;color:var(--muted);background:color-mix(in srgb,var(--pfh) 10%,var(--surface));border:1px solid color-mix(in srgb,var(--pfh) 30%,var(--line));border-radius:10px;padding:10px 14px}
 /* team tags + details window */
 .tm{display:inline-block;font:700 10.5px var(--body);letter-spacing:.02em;padding:1px 5px;border-radius:4px;margin-right:5px;color:#fff;background:#6a707c;vertical-align:1px;white-space:nowrap}.tm.M{background:#2e86de}.tm.S{background:#e67e00}
 .ev{align-items:center;overflow-wrap:normal}.ev .t,.ev.ms>span{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -105,6 +145,12 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 @media print{.bar .chips,.toggle{display:none}body{background:#fff}}
 </style></head><body>
 <div class="wrap prep-off" id="app">
+ <nav class="nav" aria-label="Pages">
+  <a href="#calendar" data-v="calendar">Calendar</a>
+  <a href="#launch-tactics" data-v="launch-tactics">Launch Tactics</a>
+  <a href="#sales-tracker" data-v="sales-tracker">Sales Tracker</a>
+ </nav>
+ <div class="view" id="v-calendar">
  <header class="top">
   <div>
    <h1>Launch &amp; Campaign Calendar</h1>
@@ -167,6 +213,27 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
    </ul>
   </div>
  </section>
+ </div>
+ <div class="view" id="v-launch-tactics" hidden>
+  <header class="pagehead">
+   <h1>Launch Tactics: what we do for each launch</h1>
+   <p>Read across a row to see where each tactic is used. Read down a column to see everything we do for one launch. Each launch column is split in two: <span class="pill M">Marketing</span> on the left, <span class="pill S">Sales</span> on the right.</p>
+  </header>
+  <div class="tbox"><table class="grid" id="tgrid"></table></div>
+  <p class="small">Rows from "Next morning at 9 am" down come from the Sales &amp; Marketing plan for Fern.</p>
+ </div>
+ <div class="view" id="v-sales-tracker" hidden>
+  <header class="pagehead">
+   <h1>Sales Tracker</h1>
+   <p>One row per customer. Sales updates it daily; I review it every Friday. Last touch example: "Call, Nov 24". Next step example: "Send pricing, Nov 26".</p>
+  </header>
+  <div class="trk-bar">
+   <div class="stats" id="tstats"></div>
+   <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" id="tcsv">Download (Excel / CSV)</button><button class="btn pri" id="tadd">+ Add customer</button></div>
+  </div>
+  <div class="tbox"><table class="trk"><thead><tr><th>Customer</th><th>Rep</th><th>Campaign</th><th>Last touch</th><th>Next step</th><th>Status</th><th></th></tr></thead><tbody id="tbody"></tbody></table><div class="empty" id="tempty">No customers yet. Click <b>+ Add customer</b> to start.</div></div>
+  <p class="warnnote">Entries save in the browser you type them in. They don't sync to other people yet. Use Download to share the list.</p>
+ </div>
 </div>
 <div id="dlg" role="dialog" aria-modal="true" aria-labelledby="dtitle"><div class="box" id="dbox"><button class="x" id="dx" aria-label="Close details">&times;</button><div class="eyebrow" id="dcamp"></div><h2 id="dtitle"></h2><dl id="dl"></dl></div></div>
 <script>
@@ -468,4 +535,49 @@ document.getElementById("dx").onclick=closeDlg;
 dlg.addEventListener("click",e=>{if(e.target===dlg)closeDlg()});
 document.addEventListener("keydown",e=>{if(e.key=="Escape"&&dlg.classList.contains("on"))closeDlg()});
 document.addEventListener("click",e=>{if(dlg.contains(e.target))return;const el=e.target.closest("[data-i]");if(el)openItem(ITEMS[+el.dataset.i],el)});
+</script>
+<script>
+{
+/* Top tabs */
+const views=["calendar","launch-tactics","sales-tracker"];
+function show(){const v=views.includes(location.hash.slice(1))?location.hash.slice(1):"calendar";
+ views.forEach(x=>{document.getElementById("v-"+x).hidden=x!=v});
+ document.querySelectorAll(".nav a").forEach(a=>a.classList.toggle("on",a.dataset.v==v))}
+addEventListener("hashchange",show);show();
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+/* Launch Tactics grid (from Launch_Tactics_Grid.xlsx, Launch Plan tab) */
+const COLS=[["WCE","New games","Monthly releases (Sept – April)","launch"],["WCE","Cabinets","Vertical & horizontal · Launch Dec 8","cab"],["WCE","PFH kiosks","From $3,999 · Launch Jan 5","pfh"],["WCE","Board sales","Games without rev share · Launch Jan 12","board"],["YES","New games","Monthly releases (Sept – April)","launch"],["YES","Board sales","Games without rev share · Launch Jan 12","board"]];
+const ROWS=[["Email distributors and operators to announce the launch", ["M", "", "", "", "M", ""]], ["Post the launch on our company LinkedIn page", ["M", "", "", "M", "M", "M"]], ["VGT", ["M", "M", "M", "M", "M", "M"]], ["Post on social media so players know about it", ["M", "", "", "", "M", ""]], ["Text players that the new game is live", ["M", "", "", "", "M", ""]], ["Mail a printed flyer to customers", ["", "", "M", "M", "", "M"]], ["Tease the new kiosks on social and email before launch (starts Nov 28)", ["", "", "M", "", "", ""]], ["Email new distributor lists (Baniella, Premieros) to get them to add PFH", ["", "", "M", "", "", ""]], ["Gather the trailer, screenshots and game overview for each new game", ["M", "", "", "", "M", ""]], ["Write a ready-to-send email that Sales sends to their customers", ["MS", "MS", "MS", "MS", "MS", "MS"]], ["Call customers after the email to follow up", ["", "S", "S", "S", "", "S"]], ["Next morning at 9 am, send each rep the list of customers who clicked the email", ["", "M", "M", "M", "", "M"]], ["Call every customer who clicked the email, the same day", ["", "S", "S", "S", "", "S"]], ["Log every call and email in the shared sales tracker", ["", "S", "S", "S", "", "S"]], ["Answer every reply and sales@wce.com lead within 4 business hours", ["", "S", "S", "S", "", "S"]], ["Every Friday, review the tracker to see what's working", ["", "M", "M", "M", "", "M"]], ["Sort board customers into 3 groups (rev share / said no to rev share / buy competitor boards) so each gets the right message", ["", "", "", "S", "", "S"]], ["Send LinkedIn connection requests to new distributors", ["", "", "S", "", "", ""]], ["Run kiosk demos and take orders", ["", "", "S", "", "", ""]]];
+let h=`<thead><tr class="brand"><th></th><th colspan="8" class="wce">WCE</th><th colspan="4" class="yes">YES</th></tr><tr class="colh"><th style="text-align:left;padding-left:14px">Tactic</th>${COLS.map(c=>`<th colspan="2" class="lch ${c[3]}">${esc(c[1])}<small>${esc(c[2])}</small></th>`).join("")}</tr><tr class="half"><th></th>${COLS.map(()=>`<th>Marketing</th><th>Sales</th>`).join("")}</tr></thead><tbody>`;
+h+=ROWS.map(([t,codes])=>`<tr><td class="tac">${esc(t)}</td>${codes.map(c=>`<td class="c">${c.includes("M")?'<span class="pill M">Marketing</span>':""}</td><td class="c r">${c.includes("S")?'<span class="pill S">Sales</span>':""}</td>`).join("")}</tr>`).join("");
+document.getElementById("tgrid").innerHTML=h+"</tbody>";
+
+/* Sales Tracker */
+const KEY="pgs-sales-tracker-v1",CAMPS=["","PFH kiosks","Boards","Cabinets","New games"],STAT=["","Contacted","Interested","Demo booked","Ordered","Not now"];
+let rows=[];try{rows=JSON.parse(localStorage.getItem(KEY)||"[]")}catch(e){rows=[]}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(rows))}catch(e){}};
+const F=["customer","rep","campaign","last","next","status"];
+const opt=(list,v)=>list.map(o=>`<option${o==v?" selected":""}>${esc(o)}</option>`).join("");
+function draw(){
+ document.getElementById("tbody").innerHTML=rows.map((r,i)=>`<tr data-r="${i}">
+  <td><input data-f="customer" value="${esc(r.customer||"")}" aria-label="Customer"></td>
+  <td><input data-f="rep" value="${esc(r.rep||"")}" aria-label="Rep"></td>
+  <td><select data-f="campaign" aria-label="Campaign">${opt(CAMPS,r.campaign)}</select></td>
+  <td><input data-f="last" value="${esc(r.last||"")}" aria-label="Last touch"></td>
+  <td><input data-f="next" value="${esc(r.next||"")}" aria-label="Next step"></td>
+  <td><select data-f="status" aria-label="Status">${opt(STAT,r.status)}</select></td>
+  <td><button class="del" aria-label="Remove row">&times;</button></td></tr>`).join("");
+ document.getElementById("tempty").hidden=rows.length>0;stats()}
+function stats(){const c={};rows.forEach(r=>{if(r.status)c[r.status]=(c[r.status]||0)+1});
+ document.getElementById("tstats").innerHTML=`<span class="stat">Customers <b>${rows.length}</b></span>`+STAT.filter(s=>c[s]).map(s=>`<span class="stat">${esc(s)} <b>${c[s]}</b></span>`).join("")}
+const tb=document.getElementById("tbody");
+tb.addEventListener("input",e=>{const tr=e.target.closest("tr");if(!tr||!e.target.dataset.f)return;rows[+tr.dataset.r][e.target.dataset.f]=e.target.value;save();stats()});
+tb.addEventListener("click",e=>{if(!e.target.classList.contains("del"))return;const i=+e.target.closest("tr").dataset.r;rows.splice(i,1);save();draw()});
+document.getElementById("tadd").onclick=()=>{rows.push({});save();draw();const ins=tb.querySelectorAll('input[data-f="customer"]');ins[ins.length-1].focus()};
+document.getElementById("tcsv").onclick=()=>{const q=v=>'"'+String(v||"").replace(/"/g,'""')+'"';
+ const csv=["Customer,Rep,Campaign,Last touch,Next step,Status",...rows.map(r=>F.map(f=>q(r[f])).join(","))].join("\n");
+ const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));a.download="Sales_Tracker.csv";document.body.appendChild(a);a.click();a.remove()};
+draw();
+}
 </script></body></html>
