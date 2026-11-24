@@ -730,6 +730,8 @@ const LINKS={
  "Robin Hood's Thanksgiving Feast":{sheet:"https://pongstudios.sharepoint.com/:b:/r/sites/Marketing/Shared%20Documents/02_External%20Download/We%20Create%20Entertainment/Play%20From%20Home/Game%20Slick%20Sheets/Robins%20Arrow%20Thanksgiving%20Feast.pdf?d=we6af18cbaa8849f8ade45d3b9d0e2faf&csf=1&web=1&e=1G27xR",video:"https://pongstudios.sharepoint.com/:v:/r/sites/Marketing/Shared%20Documents/02_External%20Download/We%20Create%20Entertainment/Play%20From%20Home/Game%20Trailer%20Videos/Robins%20Arrow%20Thanksgiving%20Feast%20-%20Play%20From%20Home.mp4?d=wb02b38ffe8d144dba8c57c0212b6da56&csf=1&web=1&e=VKcCR7"},
  "Lanterns Rising":{sheet:"https://pongstudios.sharepoint.com/sites/Marketing/Shared%20Documents/Forms/AllItems.aspx?viewid=cc2ce735%2Dc135%2D48c8%2Db62a%2D0ebb7fab8dd4&ga=1&id=%2Fsites%2FMarketing%2FShared%20Documents%2F02%5FExternal%20Download%2FWe%20Create%20Entertainment%2FPlay%20From%20Home%2FGame%20Slick%20Sheets%2FLanterns%20Rising%2Epdf&parent=%2Fsites%2FMarketing%2FShared%20Documents%2F02%5FExternal%20Download%2FWe%20Create%20Entertainment%2FPlay%20From%20Home%2FGame%20Slick%20Sheets",video:""}
 };
+/* Assets that don't exist for an item (hidden on its card) */
+const NOASSET={"Lanterns Rising":["video"]};
 const klink=(n,id)=>(LINKS[KITS[n].name]||{})[id]||KITS[n].links[id]||"";
 const kdate=it=>fmt(it.date,{month:"short",day:"numeric",year:"numeric"});
 const kd=d=>fmt(d,{month:"short",day:"numeric",year:"numeric"});
@@ -739,7 +741,7 @@ function drawKits(){const q=document.getElementById("ksearch").value.trim().toLo
  const coming=all.filter(k=>k.st=="coming").sort((x,y)=>x.live<y.live?-1:1),out=all.filter(k=>k.st=="out").sort((x,y)=>(y.live||"")<(x.live||"")?-1:1);
  const card=k=>{const w=kitWhen(k);const n=KITS.indexOf(k);
   return `<article class="kit ${k.st}"><div class="hd"><span class="st">${k.st=="out"?"Out now":"Not live yet"}</span><h2>${esc(k.name)}</h2><div class="tags"><span class="tag">${esc(k.brand)}</span><span class="tag">${esc(k.kind)}</span></div>${w?`<div class="when">${esc(w)}</div>`:""}</div>
-  <ul>${ASSETS.map(([id,lab,sub])=>{const u=klink(n,id);return `<li><div class="an">${esc(lab)}<small>${esc(sub)}</small></div>${u?`<a class="kbtn go" href="${esc(u)}" target="_blank" rel="noopener">Open</a><button class="kbtn" data-copy="${esc(u)}">Copy link</button>`:`<span class="kbtn" aria-disabled="true">Link coming soon</span>`}</li>`}).join("")}</ul>
+  <ul>${ASSETS.filter(([id])=>!(NOASSET[k.name]||[]).includes(id)).map(([id,lab,sub])=>{const u=klink(n,id);return `<li><div class="an">${esc(lab)}<small>${esc(sub)}</small></div>${u?`<a class="kbtn go" href="${esc(u)}" target="_blank" rel="noopener">Open</a><button class="kbtn" data-copy="${esc(u)}">Copy link</button>`:`<span class="kbtn" aria-disabled="true">Link coming soon</span>`}</li>`}).join("")}</ul>
   <div class="ft">${k.ci!=null?`<button data-kcal="${n}">See it on the calendar</button>`:"Not on the calendar yet"}</div></article>`};
  const sec=(t,cls,l)=>l.length?`<h2 class="ksec ${cls}">${t} <span>${l.length}</span></h2><div class="kits">${l.map(card).join("")}</div>`:"";
  document.getElementById("kits").innerHTML=(sec("Out now","out",out)+sec("Not live yet","coming",coming))||`<div class="empty">No match.</div>`}
