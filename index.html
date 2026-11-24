@@ -726,7 +726,7 @@ function drawKits(){const q=document.getElementById("ksearch").value.trim().toLo
   <ul>${ASSETS.map(([id,lab,sub])=>{const u=klink(n,id);return `<li><div class="an">${esc(lab)}<small>${esc(sub)}</small></div>${u&&!(KEDIT==n+"-"+id)?`<a class="kbtn go" href="${esc(u)}" target="_blank" rel="noopener">Open</a><button class="kbtn" data-copy="${esc(u)}">Copy link</button><button class="kedit" data-kedit="${n}-${id}" aria-label="Change ${esc(lab)} link">Edit</button>`:`<form class="kin" data-kset="${n}-${id}"><input type="url" placeholder="Paste link here" value="${esc(u||"")}" aria-label="Paste the ${esc(lab)} link for ${esc(k.name)}"><button class="kbtn go">Save</button></form>`}</li>`}).join("")}</ul>
   <div class="ft">${k.ci!=null?`<button data-kcal="${n}">See it on the calendar</button>`:"Not on the calendar yet"}</div></article>`};
  const sec=(t,cls,l)=>l.length?`<h2 class="ksec ${cls}">${t} <span>${l.length}</span></h2><div class="kits">${l.map(card).join("")}</div>`:"";
- document.getElementById("kits").innerHTML=(sec("Not live yet","coming",coming)+sec("Out now","out",out))||`<div class="empty">No match.</div>`}
+ document.getElementById("kits").innerHTML=(sec("Out now","out",out)+sec("Not live yet","coming",coming))||`<div class="empty">No match.</div>`}
 document.getElementById("ksearch").addEventListener("input",drawKits);
 document.getElementById("kits").addEventListener("submit",e=>{const f=e.target.closest("[data-kset]");if(!f)return;e.preventDefault();
  const v=f.querySelector("input").value.trim();const [n,id]=f.dataset.kset.split("-");
