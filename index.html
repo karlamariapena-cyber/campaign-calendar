@@ -167,6 +167,10 @@ table.trk{border-collapse:collapse;width:100%;min-width:900px;font-size:14px}
 .kbtn[aria-disabled="true"]{opacity:.45;cursor:default}
 .kit .ft{margin-top:auto;padding:10px 18px 14px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;border-top:1px solid var(--line);font-size:13px;color:var(--muted)}
 .kit .ft button{border:0;background:none;color:var(--ink);text-decoration:underline;font:500 13px var(--body);cursor:pointer;padding:4px 0}
+.kin{flex:none;display:flex;gap:6px;width:min(100%,250px)}
+.kin input{flex:1;min-width:0;font:14px var(--body);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:7px 9px}
+.kin input:focus{outline:2px solid var(--accent);border-color:transparent}
+.kedit{flex:none;border:0;background:none;color:var(--muted);font:600 13px var(--body);text-decoration:underline;cursor:pointer;padding:6px 2px}
 .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--surface);padding:10px 16px;border-radius:10px;font-size:14px;z-index:50;display:none}
 .warnnote{font-size:13.5px;color:var(--muted);background:color-mix(in srgb,var(--pfh) 10%,var(--surface));border:1px solid color-mix(in srgb,var(--pfh) 30%,var(--line));border-radius:10px;padding:10px 14px}
 /* team tags + details window */
@@ -277,6 +281,7 @@ table.trk{border-collapse:collapse;width:100%;min-width:900px;font-size:14px}
   </div>
   <div class="kits" id="kits"></div>
   <p class="small">Links open in SharePoint. You need to be signed in to the Pong Studios SharePoint to see them.</p>
+  <p class="warnnote">Links you paste save in your browser right away. To make them show for the whole Sales team, send them to Claude to add to the page.</p>
  </div>
  <div class="view" id="v-sales-tracker" hidden>
   <header class="pagehead">
@@ -686,6 +691,9 @@ const KITS=[
  {name:"Nebraska Skill Rush Series 1",brand:"YES",kind:"Game series",cal:"",type:"board",links:{}}
 ];
 document.getElementById("kmaster").href=MASTER;
+const LKEY="pgs-kit-links-v1";let KL={};try{KL=JSON.parse(localStorage.getItem(LKEY)||"{}")}catch(e){KL={}}
+let KEDIT="";
+const klink=(n,id)=>KL[KITS[n].name+"|"+id]??KITS[n].links[id]??"";
 const kdate=it=>fmt(it.date,{month:"short",day:"numeric",year:"numeric"});
 function kitWhen(k){if(!k.cal)return "";const ms=ITEMS.filter(it=>it.game==k.cal&&it.ms);
  const live=ms.find(it=>!it.end),end=ms.find(it=>it.end);
@@ -694,13 +702,18 @@ function drawKits(){const q=document.getElementById("ksearch").value.trim().toLo
  const list=KITS.filter(k=>!q||(k.name+" "+k.brand+" "+k.kind).toLowerCase().includes(q));
  document.getElementById("kits").innerHTML=list.length?list.map(k=>{const w=kitWhen(k);const n=KITS.indexOf(k);
   return `<article class="kit ${k.type}"><div class="hd"><h2>${esc(k.name)}</h2><div class="tags"><span class="tag">${esc(k.brand)}</span><span class="tag">${esc(k.kind)}</span></div>${w?`<div class="when">${esc(w)}</div>`:""}</div>
-  <ul>${ASSETS.map(([id,lab,sub])=>{const u=k.links[id];return `<li><div class="an">${esc(lab)}<small>${esc(sub)}</small></div>${u?`<a class="kbtn go" href="${esc(u)}" target="_blank" rel="noopener">Open</a><button class="kbtn" data-copy="${esc(u)}">Copy link</button>`:`<a class="kbtn" href="${esc(MASTER)}" target="_blank" rel="noopener" title="Specific link not added yet">Find in master folder</a>`}</li>`}).join("")}</ul>
+  <ul>${ASSETS.map(([id,lab,sub])=>{const u=klink(n,id);return `<li><div class="an">${esc(lab)}<small>${esc(sub)}</small></div>${u&&!(KEDIT==n+"-"+id)?`<a class="kbtn go" href="${esc(u)}" target="_blank" rel="noopener">Open</a><button class="kbtn" data-copy="${esc(u)}">Copy link</button><button class="kedit" data-kedit="${n}-${id}" aria-label="Change ${esc(lab)} link">Edit</button>`:`<form class="kin" data-kset="${n}-${id}"><input type="url" placeholder="Paste link here" value="${esc(u||"")}" aria-label="Paste the ${esc(lab)} link for ${esc(k.name)}"><button class="kbtn go">Save</button></form>`}</li>`}).join("")}</ul>
   <div class="ft">${k.cal?`<button data-kcal="${n}">See it on the calendar</button>`:"Not on the calendar yet"}</div></article>`}).join(""):`<div class="empty">No match.</div>`}
 document.getElementById("ksearch").addEventListener("input",drawKits);
+document.getElementById("kits").addEventListener("submit",e=>{const f=e.target.closest("[data-kset]");if(!f)return;e.preventDefault();
+ const v=f.querySelector("input").value.trim();const [n,id]=f.dataset.kset.split("-");
+ if(v&&!/^https?:\/\//i.test(v)){say("Paste a full link that starts with https://");return}
+ KL[KITS[+n].name+"|"+id]=v;try{localStorage.setItem(LKEY,JSON.stringify(KL))}catch(err){}KEDIT="";drawKits();say(v?"Link saved":"Link removed")});
 const toast=document.createElement("div");toast.className="toast";toast.setAttribute("role","status");document.body.appendChild(toast);
 const say=m=>{toast.textContent=m;toast.style.display="block";clearTimeout(say.t);say.t=setTimeout(()=>toast.style.display="none",1800)};
 document.getElementById("kits").addEventListener("click",async e=>{
  const c=e.target.closest("[data-copy]");if(c){try{await navigator.clipboard.writeText(c.dataset.copy);say("Link copied")}catch(err){say("Copy didn't work here. Use Open, then copy from the address bar.")}return}
+ const ed=e.target.closest("[data-kedit]");if(ed){KEDIT=ed.dataset.kedit;drawKits();const i=document.querySelector(`[data-kset="${KEDIT}"] input`);if(i){i.focus();i.select()}return}
  const g=e.target.closest("[data-kcal]");if(g){const k=KITS[+g.dataset.kcal];const it=ITEMS.filter(i=>i.game==k.cal&&i.ms&&!i.end)[0]||ITEMS.find(i=>i.game==k.cal);if(!it)return;
   location.hash="calendar";const m=MONTHS.findIndex(([y,mo])=>it.date.slice(0,7)==iso(y,mo,1).slice(0,7));if(m>=0)render(m);
   const el=document.querySelector(`.cal [data-i="${it.i}"]`);if(el)el.scrollIntoView({block:"center"});openItem(it,el)}});
