@@ -269,7 +269,7 @@ table.trk{border-collapse:collapse;width:100%;min-width:900px;font-size:14px}
  <div class="view" id="v-marketing-kits" hidden>
   <header class="pagehead">
    <h1>Marketing Kits</h1>
-   <p>Everything Sales needs to share a game or product with customers: video ads, trailers, screenshots, game sheets and brochures. Click <b>Open</b> to view a file, or <b>Copy link</b> to paste it into an email.</p>
+   <p>The sales sheet and video ad for each game and product, ready for Sales to share with customers. Click <b>Open</b> to view a file, or <b>Copy link</b> to paste it into an email.</p>
   </header>
   <div class="kbar">
    <input id="ksearch" type="search" placeholder="Search games and products" aria-label="Search games and products">
@@ -678,7 +678,7 @@ addEventListener("keydown",e=>{if(e.key=="Escape"&&td.classList.contains("on"))c
 
 /* Marketing Kits: add a game or product by adding one entry to KITS. Put a SharePoint link in an asset's url when it is ready. */
 const MASTER="https://pongstudios.sharepoint.com/:f:/s/Marketing/IgBLaigGG2qLSZblGS6YhSoCAYbek2eTqEQD-mQrbI53pmM?e=QzDtLz";
-const ASSETS=[["video","Video ad / trailer","For email, LinkedIn and social"],["shots","Screenshots","Game screens to show customers"],["sheet","Game sheet / brochure (PDF)","One page to send or print"],["art","Promo art + logo","For flyers, posters and posts"],["social","Social + email graphics","Ready-sized for posts and eblasts"]];
+const ASSETS=[["sheet","Sales sheet (PDF)","One page to send or print"],["video","Video ad","For email, LinkedIn and social"]];
 const KITS=[
  {name:"Jewels of Cleopatra",brand:"WCE · PFH",kind:"New game",cal:"Jewels of Cleopatra",type:"launch",links:{}},
  {name:"Robin Hood's Thanksgiving Feast",brand:"WCE · PFH",kind:"New game",cal:"Robin's Arrow",type:"launch",links:{}},
