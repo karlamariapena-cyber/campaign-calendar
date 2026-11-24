@@ -294,7 +294,6 @@ table.trk{border-collapse:collapse;width:100%;min-width:900px;font-size:14px}
   </div>
   <div id="kits"></div>
   <p class="small">Links open in SharePoint. You need to be signed in to the Pong Studios SharePoint to see them.</p>
-  <p class="warnnote">Links you paste save in your browser right away. To make them show for the whole Sales team, send them to Claude to add to the page.</p>
  </div>
  <div class="view" id="v-sales-tracker" hidden>
   <header class="pagehead">
@@ -717,9 +716,11 @@ const KITS=[
   KITS.push({name:nm,brand:"WCE",kind:"Product · "+sub,cal:"",live:it?it.date:"",ci:it?it.i:undefined,links:{}})});
  KITS.forEach(k=>{k.st=k.status||(k.live&&k.live<=TODAY?"out":k.live?"coming":"out")});}
 document.getElementById("kmaster").href=MASTER;
-const LKEY="pgs-kit-links-v1";let KL={};try{KL=JSON.parse(localStorage.getItem(LKEY)||"{}")}catch(e){KL={}}
-let KEDIT="";
-const klink=(n,id)=>KL[KITS[n].name+"|"+id]??KITS[n].links[id]??"";
+/* LINKS: one entry per game or product, by its name on this page. sheet = sales sheet, video = video ad. */
+const LINKS={
+ "Jewels of Cleopatra":{sheet:"",video:""}
+};
+const klink=(n,id)=>(LINKS[KITS[n].name]||{})[id]||KITS[n].links[id]||"";
 const kdate=it=>fmt(it.date,{month:"short",day:"numeric",year:"numeric"});
 const kd=d=>fmt(d,{month:"short",day:"numeric",year:"numeric"});
 function kitWhen(k){return [k.live?(k.st=="out"?"Out since "+kd(k.live):"Coming "+kd(k.live)):(k.st=="out"?"Out now":""),k.ends?"Ends "+kd(k.ends):"",k.also||""].filter(Boolean).join(" · ")}
@@ -728,20 +729,15 @@ function drawKits(){const q=document.getElementById("ksearch").value.trim().toLo
  const coming=all.filter(k=>k.st=="coming").sort((x,y)=>x.live<y.live?-1:1),out=all.filter(k=>k.st=="out").sort((x,y)=>(y.live||"")<(x.live||"")?-1:1);
  const card=k=>{const w=kitWhen(k);const n=KITS.indexOf(k);
   return `<article class="kit ${k.st}"><div class="hd"><span class="st">${k.st=="out"?"Out now":"Not live yet"}</span><h2>${esc(k.name)}</h2><div class="tags"><span class="tag">${esc(k.brand)}</span><span class="tag">${esc(k.kind)}</span></div>${w?`<div class="when">${esc(w)}</div>`:""}</div>
-  <ul>${ASSETS.map(([id,lab,sub])=>{const u=klink(n,id);return `<li><div class="an">${esc(lab)}<small>${esc(sub)}</small></div>${u&&!(KEDIT==n+"-"+id)?`<a class="kbtn go" href="${esc(u)}" target="_blank" rel="noopener">Open</a><button class="kbtn" data-copy="${esc(u)}">Copy link</button><button class="kedit" data-kedit="${n}-${id}" aria-label="Change ${esc(lab)} link">Edit</button>`:`<form class="kin" data-kset="${n}-${id}"><input type="url" placeholder="Paste link here" value="${esc(u||"")}" aria-label="Paste the ${esc(lab)} link for ${esc(k.name)}"><button class="kbtn go">Save</button></form>`}</li>`}).join("")}</ul>
+  <ul>${ASSETS.map(([id,lab,sub])=>{const u=klink(n,id);return `<li><div class="an">${esc(lab)}<small>${esc(sub)}</small></div>${u?`<a class="kbtn go" href="${esc(u)}" target="_blank" rel="noopener">Open</a><button class="kbtn" data-copy="${esc(u)}">Copy link</button>`:`<span class="kbtn" aria-disabled="true">Link coming soon</span>`}</li>`}).join("")}</ul>
   <div class="ft">${k.ci!=null?`<button data-kcal="${n}">See it on the calendar</button>`:"Not on the calendar yet"}</div></article>`};
  const sec=(t,cls,l)=>l.length?`<h2 class="ksec ${cls}">${t} <span>${l.length}</span></h2><div class="kits">${l.map(card).join("")}</div>`:"";
  document.getElementById("kits").innerHTML=(sec("Out now","out",out)+sec("Not live yet","coming",coming))||`<div class="empty">No match.</div>`}
 document.getElementById("ksearch").addEventListener("input",drawKits);
-document.getElementById("kits").addEventListener("submit",e=>{const f=e.target.closest("[data-kset]");if(!f)return;e.preventDefault();
- const v=f.querySelector("input").value.trim();const [n,id]=f.dataset.kset.split("-");
- if(v&&!/^https?:\/\//i.test(v)){say("Paste a full link that starts with https://");return}
- KL[KITS[+n].name+"|"+id]=v;try{localStorage.setItem(LKEY,JSON.stringify(KL))}catch(err){}KEDIT="";drawKits();say(v?"Link saved":"Link removed")});
 const toast=document.createElement("div");toast.className="toast";toast.setAttribute("role","status");document.body.appendChild(toast);
 const say=m=>{toast.textContent=m;toast.style.display="block";clearTimeout(say.t);say.t=setTimeout(()=>toast.style.display="none",1800)};
 document.getElementById("kits").addEventListener("click",async e=>{
  const c=e.target.closest("[data-copy]");if(c){try{await navigator.clipboard.writeText(c.dataset.copy);say("Link copied")}catch(err){say("Copy didn't work here. Use Open, then copy from the address bar.")}return}
- const ed=e.target.closest("[data-kedit]");if(ed){KEDIT=ed.dataset.kedit;drawKits();const i=document.querySelector(`[data-kset="${KEDIT}"] input`);if(i){i.focus();i.select()}return}
  const g=e.target.closest("[data-kcal]");if(g){const k=KITS[+g.dataset.kcal];const it=ITEMS[k.ci];if(!it)return;
   location.hash="calendar";const m=MONTHS.findIndex(([y,mo])=>it.date.slice(0,7)==iso(y,mo,1).slice(0,7));if(m>=0)render(m);
   const el=document.querySelector(`.cal [data-i="${it.i}"]`);if(el)el.scrollIntoView({block:"center"});openItem(it,el)}});
