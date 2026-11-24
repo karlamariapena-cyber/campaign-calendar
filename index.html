@@ -86,9 +86,19 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .notes ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;color:var(--ink)}
 .notes li b{font-weight:600}
 .small{font-size:13.5px;color:var(--muted)}
-/* popover */
-#tip{position:fixed;z-index:20;max-width:300px;background:var(--ink);color:var(--surface);border-radius:10px;padding:10px 12px;font-size:13.5px;line-height:1.4;box-shadow:0 8px 24px rgba(0,0,0,.2);display:none;pointer-events:none}
-#tip .k{opacity:.7;font-size:12.5px}
+/* team tags + details window */
+.tm{display:inline-block;font:700 10.5px var(--body);letter-spacing:.02em;padding:1px 5px;border-radius:4px;margin-right:5px;color:#fff;background:#6a707c;vertical-align:1px;white-space:nowrap}.tm.M{background:#2e86de}.tm.S{background:#e67e00}
+.ev{align-items:center;overflow-wrap:normal}.ev .t,.ev.ms>span{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ev .tm{font-size:9.5px;padding:0 4px;margin-right:4px}
+.task>div{flex:1;min-width:0}.task .what{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#dlg{position:fixed;inset:0;z-index:30;display:none;align-items:center;justify-content:center;background:rgba(10,12,16,.5);padding:16px}
+#dlg.on{display:flex}
+.box{background:var(--surface);color:var(--ink);border-radius:14px;max-width:460px;width:100%;max-height:90vh;overflow:auto;padding:22px 22px 20px;box-shadow:0 20px 50px rgba(0,0,0,.3);position:relative;border-top:6px solid var(--c,var(--accent))}
+.box .eyebrow{color:var(--c,var(--accent))}
+.box h2{font-size:20px;font-weight:800;margin:6px 40px 16px 0;line-height:1.3}
+.box dl{display:grid;grid-template-columns:auto 1fr;gap:8px 16px;margin:0;font-size:14.5px}.box dt{color:var(--muted);font-weight:600}.box dd{margin:0}
+.x{position:absolute;top:12px;right:12px;width:40px;height:40px;border-radius:50%;border:0;background:var(--line);color:var(--ink);font:600 22px/1 var(--body);cursor:pointer;display:grid;place-items:center}
+.x:hover{background:color-mix(in srgb,var(--ink) 18%,var(--surface))}
 @media (max-width:900px){.today{grid-template-columns:1fr}.notes{grid-template-columns:1fr}}
 @media (max-width:480px){.wrap{padding:18px 16px 36px}.top h1{font-size:23px}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
@@ -103,11 +113,12 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   <div class="legend">
    <span class="launch"><i class="dot"></i>New games · PFH</span>
    <span class="v2"><i class="dot"></i>New games · V2 Sweeps</span>
-   <span class="cab"><i class="dot"></i>Cabinet sales</span>
-   <span class="board"><i class="dot"></i>Board sales</span>
-   <span class="pfh"><i class="dot"></i>PFH + kiosks</span>
+   <span class="cab"><i class="dot"></i>Cabinet sale</span>
+   <span class="board"><i class="dot"></i>Game board sale</span>
+   <span class="pfh"><i class="dot"></i>Play From Home kiosk sale</span>
    <span class="hol"><i class="dot"></i>Holiday</span>
    <span class="plan"><i class="dot"></i>Other marketing</span>
+   <span><b class="tm M">Marketing</b><b class="tm S">Sales</b>= who is accountable</span>
   </div>
  </header>
 
@@ -132,7 +143,9 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
    <ul class="small">
     <li>Colour shows the campaign. A solid bar means it <b>goes live</b>; an outlined bar means it <b>ends</b>.</li>
     <li>The calendar shows key dates only. Turn on <b>Show prep tasks</b> to see internal work.</li>
-    <li>Faded and crossed out means done or skipped. Hover or tap any item for owner, status and notes.</li>
+    <li>Faded and crossed out means done or skipped.</li>
+    <li><b>Click any item</b> to open its full details. Click X to close.</li>
+    <li>Each item has a <b>Marketing</b> or <b>Sales</b> tag: that team is accountable for it on that date. Use the Marketing / Sales buttons to see one team only.</li>
    </ul>
   </div>
   <div class="panel">
@@ -144,6 +157,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
     <li><b>Feb–Apr, every Tuesday:</b> week 1 PFH + kiosks · week 2 Boards · week 3 Cabinets · week 4 New games preview.</li>
     <li><b>Every push:</b> I send the click list at 9 am the next day, Sales calls the same day and logs it in NetSuite. Sales summary every Monday.</li>
     <li><b>To agree:</b> Sales capacity and owners (Faran) · extend the PFH kiosk offer past Dec 31 to Apr 30? · monthly targets per program.</li>
+    <li><b>New games, Sales’ only job:</b> before each launch, contact your customers, let them know a new game is coming and share the game sheet + trailer.</li>
     <li>No outreach Nov 26–27 (US Thanksgiving).</li>
     <li><b>V2 Sweeps</b> (slate): 9 new horizontal games, two per month. Dec 1 Pharaoh’s Quest + Fruit Splitter · Jan 1 Canada Eh Part Deux + Grand Prosperity · Feb 1 Blade of Fortune + Jewels of Cleopatra · Mar 1 Sword of Z Nudge + Nordic Paws. Hollow Graves of Riches held for next October. Order to confirm with Suki and Fern.</li>
     <li><b>Holiday cards:</b> get them signed and shipped to the distributor by Mon Nov 23. Check they can still go out with the holiday gifts.</li>
@@ -154,9 +168,9 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   </div>
  </section>
 </div>
-<div id="tip" role="tooltip"></div>
+<div id="dlg" role="dialog" aria-modal="true" aria-labelledby="dtitle"><div class="box" id="dbox"><button class="x" id="dx" aria-label="Close details">&times;</button><div class="eyebrow" id="dcamp"></div><h2 id="dtitle"></h2><dl id="dl"></dl></div></div>
 <script>
-const N=(date,game,task,aud,owner,status,notes)=>({date,game,task,aud,owner:owner||"",status:status||"Not started",notes:notes||""});
+const N=(date,game,task,aud,owner,status,notes,team)=>({date,game,task,aud,owner:owner||"",status:status||"Not started",notes:notes||"",team:team||""});
 const ITEMS=[
 N("2026-10-23","Lanterns Rising","Game facts confirmed","Internal","Karla","Done"),
 N("2026-10-26","Lanterns Rising","Assets: trailer, screenshots, promo art","Internal","Amer","Done","Trailer skipped"),
@@ -196,8 +210,8 @@ N("2026-11-23","Snow Birds","Sales sheet (PDF)","Internal","Amer / Karla","Done"
 N("2026-11-24","Santa's Gift Hunt","Assets: trailer, screenshots, promo art","Internal","Amer"),
 N("2026-11-24","Santa's Gift Hunt","Sales sheet (PDF) + launch package link","Internal","Amer / Karla"),
 N("2026-11-25","Jewels of Cleopatra","Feature post (one light post over Thanksgiving)","Players","Karla"),
-N("2026-11-25","Snow Birds","Sales email: Snow Birds","Distributors","Sales reps","","Snow Birds only, Santa's Gift Hunt gets its own email"),
-N("2026-11-30","Santa's Gift Hunt","Sales email: Santa's Gift Hunt","Distributors","Sales reps","","Santa's Gift Hunt only. Draft date"),
+N("2026-11-25","Snow Birds","Contact your customers: Snow Birds is coming Nov 30, share the game sheet + trailer","Distributors","Sales reps"),
+N("2026-11-30","Santa's Gift Hunt","Contact your customers: Santa's Gift Hunt is coming Dec 2, share the game sheet + trailer","Distributors","Sales reps","","Draft date"),
 N("2026-11-30","Snow Birds","GAME LIVE","—","","Milestone"),
 N("2026-11-30","Lanterns Rising","4-week check-in","Internal","Shemal","In progress","4 weeks = Nov 30 (old sheet said Nov 23)"),
 N("2026-12-02","Santa's Gift Hunt","GAME LIVE","—","","Milestone"),
@@ -215,9 +229,9 @@ N("2026-12-10","Robin's Arrow","GAME ENDS","—","","Milestone"),
 N("2026-12-14","Blades of Fortune","Confirm launch date and game facts","Internal",""),
 N("2026-12-14","Viking Voyage","Confirm launch date and game facts","Internal",""),
 N("2026-12-21","Blades of Fortune","Sales sheet (PDF) + assets","Internal",""),
-N("2026-12-21","Blades of Fortune","Sales email to operators & distributors","Distributors","","","Send before the holiday break"),
+N("2026-12-21","Blades of Fortune","Contact your customers: new game coming Jan 1, share the game sheet + trailer","Distributors","Sales reps","","Before the holiday break"),
 N("2026-12-21","Viking Voyage","Sales sheet (PDF) + assets","Internal",""),
-N("2026-12-21","Viking Voyage","Sales email to operators & distributors","Distributors","","","Send before the holiday break"),
+N("2026-12-21","Viking Voyage","Contact your customers: new game coming Jan 1, share the game sheet + trailer","Distributors","Sales reps","","Before the holiday break"),
 N("2027-01-01","Blades of Fortune","GAME LIVE","—","","Milestone"),
 N("2027-01-01","Viking Voyage","GAME LIVE","—","","Milestone"),
 N("2027-01-08","Santa's Gift Hunt","Last chance: email to distributors","Distributors","Karla","","Moved from Jan 12 to clear the Boards launch"),
@@ -284,20 +298,105 @@ N("2027-01-26","Board Sales","LinkedIn post #2","Distributors","Karla","","Draft
 N("2027-02-09","Board Sales","LinkedIn post: boards monthly push","Distributors","Karla"),
 N("2027-03-09","Board Sales","LinkedIn post: boards monthly push","Distributors","Karla"),
 N("2027-04-13","Board Sales","LinkedIn post: boards monthly push","Distributors","Karla"),
+// Next-day follow-up after every push (who is accountable)
+N("2026-12-09","Cabinet Sales","9 am: send each rep the list of who clicked","Sales team","Karla","","","Marketing"),
+N("2026-12-16","Cabinet Sales","9 am: send each rep the list of who clicked","Sales team","Karla","","","Marketing"),
+N("2026-12-16","Cabinet Sales","Call every customer who clicked yesterday's email, then send them the follow-up email","Distributors","Sales reps","","Log it in NetSuite the same day","Sales"),
+N("2026-12-23","Cabinet Sales","9 am: send each rep the list of who clicked","Sales team","Karla","","","Marketing"),
+N("2026-12-23","Cabinet Sales","Call every customer who clicked yesterday's email, then send them the follow-up email","Distributors","Sales reps","","Log it in NetSuite the same day","Sales"),
+N("2027-01-20","Cabinet Sales","9 am: send each rep the list of who clicked","Sales team","Karla","","","Marketing"),
+N("2027-01-20","Cabinet Sales","Call every customer who clicked yesterday's email, then send them the follow-up email","Distributors","Sales reps","","Log it in NetSuite the same day","Sales"),
+N("2027-02-17","Cabinet Sales","9 am: send each rep the list of who clicked","Sales team","Karla","","","Marketing"),
+N("2027-02-17","Cabinet Sales","Call every customer who clicked yesterday's email, then send them the follow-up email","Distributors","Sales reps","","Log it in NetSuite the same day","Sales"),
+N("2027-03-17","Cabinet Sales","9 am: send each rep the list of who clicked","Sales team","Karla","","","Marketing"),
+N("2027-03-17","Cabinet Sales","Call every customer who clicked yesterday's email, then send them the follow-up email","Distributors","Sales reps","","Log it in NetSuite the same day","Sales"),
+N("2027-04-21","Cabinet Sales","9 am: send each rep the list of who clicked","Sales team","Karla","","","Marketing"),
+N("2027-04-21","Cabinet Sales","Call every customer who clicked yesterday's email, then send them the follow-up email","Distributors","Sales reps","","Log it in NetSuite the same day","Sales"),
+N("2027-01-06","PFH Kiosk","9 am: send each rep the list of who clicked","Sales team","Karla","","","Marketing"),
+N("2027-02-03","PFH Kiosk","9 am: send each rep the list of who clicked","Sales team","Karla","","","Marketing"),
+N("2027-02-03","PFH Kiosk","Call every customer who clicked yesterday's email, then send them the follow-up email","Distributors","Sales reps","","Log it in NetSuite the same day","Sales"),
+N("2027-03-03","PFH Kiosk","9 am: send each rep the list of who clicked","Sales team","Karla","","","Marketing"),
+N("2027-03-03","PFH Kiosk","Call every customer who clicked yesterday's email, then send them the follow-up email","Distributors","Sales reps","","Log it in NetSuite the same day","Sales"),
+N("2027-04-07","PFH Kiosk","9 am: send each rep the list of who clicked","Sales team","Karla","","","Marketing"),
+N("2027-04-07","PFH Kiosk","Call every customer who clicked yesterday's email, then send them the follow-up email","Distributors","Sales reps","","Log it in NetSuite the same day","Sales"),
+N("2027-01-13","Board Sales","9 am: send each rep the list of who clicked","Sales team","Karla","","","Marketing"),
+N("2027-02-10","Board Sales","9 am: send each rep the list of who clicked","Sales team","Karla","","","Marketing"),
+N("2027-02-10","Board Sales","Call every customer who clicked yesterday's email, then send them a personal email","Distributors","Sales reps","","Log it in NetSuite the same day","Sales"),
+N("2027-03-10","Board Sales","9 am: send each rep the list of who clicked","Sales team","Karla","","","Marketing"),
+N("2027-03-10","Board Sales","Call every customer who clicked yesterday's email, then send them a personal email","Distributors","Sales reps","","Log it in NetSuite the same day","Sales"),
+N("2027-04-14","Board Sales","9 am: send each rep the list of who clicked","Sales team","Karla","","","Marketing"),
+N("2027-04-14","Board Sales","Call every customer who clicked yesterday's email, then send them a personal email","Distributors","Sales reps","","Log it in NetSuite the same day","Sales"),
 N("2027-04-27","New Games Preview","New games preview for May","Distributors","Karla","","")
 ];
 
-const TYPE={"Cabinet Sales":"cab","Board Sales":"board","PFH Kiosk":"pfh","Holiday Cards":"hol","Holiday":"hol","Planning":"plan","Amusement Expo 2027":"plan","YES":"plan","Reporting":"plan","PFH Players":"plan","WCE Website":"plan","WCE Website":"plan"};
-const TNAME={launch:"New games · PFH",v2:"New games · V2 Sweeps",cab:"Cabinet sales",board:"Board sales",pfh:"PFH + kiosks",hol:"Holiday",plan:"Other marketing"};
+const TYPE={"Cabinet Sales":"cab","Board Sales":"board","PFH Kiosk":"pfh","Holiday Cards":"hol","Holiday":"hol","Planning":"plan","Amusement Expo 2027":"plan","YES":"plan","Reporting":"plan","PFH Players":"plan","WCE Website":"plan"};
+const TNAME={launch:"New games · PFH",v2:"New games · V2 Sweeps",cab:"Cabinet sale",board:"Game board sale",pfh:"Play From Home kiosk sale",hol:"Holiday",plan:"Other marketing"};
 const PENDING={};
-ITEMS.forEach((it,i)=>{it.i=i;it.type=TYPE[it.game]||(it.game.startsWith("V2 Sweeps")?"v2":"launch");it.ms=it.status=="Milestone";it.end=/ENDS/.test(it.task)});
+const teamOf=o=>/Sales/.test(o)?"Sales":/Faran/.test(o)?"Marketing + Sales":/^(Fern|Greg)/.test(o)?"Leadership":/^Suki$/.test(o)?"Product":/^Shemal$/.test(o)?"Analytics":"Marketing";
+ITEMS.forEach((it,i)=>{it.i=i;it.type=TYPE[it.game]||(it.game.startsWith("V2 Sweeps")?"v2":"launch");it.ms=it.status=="Milestone";it.end=/ENDS/.test(it.task);it.team=it.team||(it.ms?"":teamOf(it.owner))});
+const GN={"Cabinet Sales":"Cabinet sale","Board Sales":"Game board sale","PFH Kiosk":"Play From Home kiosk sale","New Games Preview":"New games preview"};
+const PLAIN={
+"Game facts confirmed": "Confirm the new game's details (features, launch date)",
+"Assets: trailer, screenshots, promo art": "Get the game's trailer, screenshots and promo art ready",
+"Assets: provider pack, trailer, screenshots": "Get the game's trailer, screenshots and promo art ready",
+"Sales sheet (PDF) + launch package link": "Make the one-page game sheet Sales shares with customers",
+"Sales sheet (PDF)": "Make the one-page game sheet Sales shares with customers",
+"Sales sheet (PDF) + assets": "Make the game sheet, trailer and screenshots",
+"Game sheet for operators": "Make the one-page game sheet for operators",
+"Social + email graphics": "Design the social and email graphics",
+"Sales email to operators & distributors": "Email operators and distributors about the new game",
+"Teaser social post": "Post a 'coming soon' teaser on social for players",
+"Launch email to distributors": "Email distributors: the new game is live",
+"VGT + LinkedIn posts": "Post the new game on VGT and LinkedIn",
+"Player social post": "Post on social so players know the new game is live",
+"Player social: Snow Birds is here": "Post on social so players know Snow Birds is live",
+"Player social: Santa's Gift Hunt is here": "Post on social so players know Santa's Gift Hunt is live",
+"Player SMS": "Text players that the new game is live",
+"'Coming Nov 23' sales email": "Email operators: new game coming Nov 23",
+"Confirm it's ready to launch": "Confirm the game is ready to launch on time",
+"'Live now' email to distributors → COMBINED": "Email distributors: the new game is live (merged into another email)",
+"Player launch post with trailer": "Post the game trailer on social for players",
+"Feature post (one light post over Thanksgiving)": "One more social post about the game over Thanksgiving",
+"4-week check-in": "Check how the game is doing 4 weeks after launch",
+"Last chance: email to distributors": "Email distributors: last chance, the game leaves soon",
+"Confirm launch date and game facts": "Confirm the launch date and game details",
+"PREP: confirm cabinet pricing and stock": "Confirm cabinet prices and how many are in stock",
+"PREP: Sales sends customer list (vertical only / horizontal only / both)": "Send the customer list, sorted by vertical only / horizontal only / both cabinets",
+"PREP: pick the PFH mailer and confirm print lead time": "Pick the kiosk mailer and confirm how long printing takes",
+"PREP: build cabinet eblasts + test sends": "Build the cabinet emails and send tests",
+"Cabinet launch eblast, leading with vertical cabinets": "Email all customers: add a cabinet to play the games they can't play today (leading with vertical cabinets)",
+"Second cabinet push": "Second email to customers about adding a cabinet",
+"Year-end cabinet push": "Year-end email to customers about adding a cabinet",
+"Coming in January teaser for PFH kiosks and boards": "Teaser email: Play From Home kiosks and game boards are coming in January",
+"PFH + Kiosks launch": "Email all distributors: Play From Home kiosks from $3,999, no royalties until the kiosk pays for itself",
+"Boards launch (WCE, and YES once the game lists are approved)": "Email customers: buy game boards at one fixed price, no rev share (WCE; YES once game lists are approved)",
+"Cabinet push": "Monthly email to customers: cabinet offer reminder",
+"Cabinets monthly push": "Monthly email to customers: cabinet offer reminder",
+"PFH + Kiosks monthly push": "Monthly email to distributors: kiosk offer reminder",
+"Boards monthly push": "Monthly email to customers: game board offer reminder",
+"Sales follow-up email + calls to everyone who clicked": "Call every customer who clicked yesterday's email, then send them the follow-up email",
+"Sales follow-up email + calls": "Call every customer who clicked yesterday's email, then send them the follow-up email",
+"Sales personal emails + calls": "Call every customer who clicked yesterday's email, then send them a personal email",
+"Kiosk mailer goes out": "Mail the printed kiosk flyer to distributors",
+"Board mailer goes out": "Mail the printed game board flyer to customers",
+"Email Baniella + Premieros lists to recruit new distributors": "Email distributors who don't carry Play From Home yet (Baniella + Premieros lists): add kiosks to your route",
+"Follow-up email to Baniella + Premieros lists": "Follow-up email to distributors who don't carry Play From Home yet",
+"LinkedIn post: boards launch": "LinkedIn post: buy game boards at one fixed price, no rev share",
+"LinkedIn post #2": "Second LinkedIn post about buying game boards",
+"LinkedIn post: boards monthly push": "Monthly LinkedIn post: game board offer reminder",
+"9 am: send each rep the list of who clicked": "By 9 am, send each sales rep the customers who clicked yesterday's email"
+};
+ITEMS.forEach(it=>{const m=/^New games preview for (\w+)$/.exec(it.task);it.task=m?"Email distributors: preview of the new games coming in "+m[1]:(PLAIN[it.task]||it.task)});
+const tcls=it=>it.team=="Sales"?"S":it.team=="Marketing"?"M":"O";
+const tbs=it=>it.ms||!it.team?"":`<b class="tm ${tcls(it)}">${it.team=="Marketing"?"MKT":it.team=="Sales"?"SALES":esc(it.team)}</b>`;
+const tb=it=>it.ms||!it.team?"":`<b class="tm ${tcls(it)}">${esc(it.team)}</b>`;
 const pad=n=>String(n).padStart(2,"0");
 const iso=(y,m,d)=>y+"-"+pad(m+1)+"-"+pad(d);
 const now=new Date();const TODAY=iso(now.getFullYear(),now.getMonth(),now.getDate());
 const toD=k=>{const [y,m,d]=k.split("-").map(Number);return new Date(y,m-1,d)};
 const fmt=(k,o)=>toD(k).toLocaleDateString("en-US",o);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const name=it=>it.game+(PENDING[it.type]?" (pending)":"");
+const name=it=>GN[it.game]||(it.type=="launch"?it.game+" (new game)":it.game);
 const label=it=>it.ms?(it.end?(it.task.includes("OFFER")?"Offer ends":"Ends"):"Goes live"):it.task;
 const byDate={};ITEMS.forEach(it=>(byDate[it.date]=byDate[it.date]||[]).push(it));
 const ORD={hol:-1,plan:4,launch:0,v2:0,pfh:1,cab:2,board:3};
@@ -307,7 +406,7 @@ const stCls=it=>it.status=="Done"?" done":it.status=="Skip"?" skip":"";
 /* Today panels */
 const task=(it,showDate)=>{
  const who=[showDate?fmt(it.date,{weekday:"short",month:"short",day:"numeric"}):"",it.aud=="Internal"?"Prep":"",it.owner,it.ms?"":it.status].filter(Boolean).join(" · ");
- return `<div class="task ${it.type} ${it.aud}${it.ms?" ms":" tint"}${stCls(it)}" data-i="${it.i}"><i class="dot"></i><div><div class="what">${esc(name(it))}: ${esc(label(it))}</div>${who?`<div class="who">${esc(who)}</div>`:""}</div></div>`};
+ return `<div class="task ${it.type} ${it.aud}${it.ms?" ms":" tint"}${stCls(it)}" data-i="${it.i}"><i class="dot"></i><div><div class="what">${tb(it)}${esc(name(it))}: ${esc(label(it))}</div>${who?`<div class="who">${esc(who)}</div>`:""}</div></div>`};
 const list=a=>a&&a.length?a.map(x=>task(x)).join(""):`<div class="none">Nothing scheduled.</div>`;
 document.getElementById("tdate").textContent=fmt(TODAY,{weekday:"long",month:"long",day:"numeric"});
 document.getElementById("tlist").innerHTML=list(byDate[TODAY]);
@@ -334,7 +433,7 @@ function render(k){
   (byDate[key]||[]).forEach(it=>{
    h+=it.ms
     ?`<div class="ev ms ${it.type}${it.end?" end":""}" data-i="${it.i}"><i class="dot"></i><span>${esc(label(it))}: ${esc(name(it))}</span></div>`
-    :`<div class="ev tint ${it.type} ${it.aud}${stCls(it)}" data-i="${it.i}"><i class="dot"></i><span class="t">${esc(it.game)}: ${esc(it.task)}</span></div>`;
+    :`<div class="ev tint ${it.type} ${it.aud}${stCls(it)}" data-i="${it.i}"><i class="dot"></i><span class="t">${tbs(it)}${esc(it.task)}</span></div>`;
   });
   h+=`</div>`;
  }
@@ -347,15 +446,26 @@ let start=MONTHS.findIndex(([y,m])=>TODAY.slice(0,7)==iso(y,m,1).slice(0,7));if(
 const off=new Set(),chips=document.getElementById("chips"),prepBtn=document.getElementById("prep");
 Object.entries(TNAME).forEach(([t,l])=>{const b=document.createElement("button");b.className="chip "+t;b.innerHTML=`<i class="dot"></i>${l}`;b.setAttribute("aria-pressed","true");
  b.onclick=()=>{off.has(t)?off.delete(t):off.add(t);b.classList.toggle("off",off.has(t));b.setAttribute("aria-pressed",!off.has(t));applyFilters()};chips.insertBefore(b,prepBtn)});
-function applyFilters(){document.querySelectorAll("[data-i]").forEach(el=>el.classList.toggle("hide",off.has(ITEMS[+el.dataset.i].type)))}
+const offTeam=new Set();
+["Marketing","Sales"].forEach(t=>{const b=document.createElement("button");b.className="chip";b.innerHTML=`<b class="tm ${t[0]}">${t}</b>`;b.setAttribute("aria-pressed","true");
+ b.onclick=()=>{offTeam.has(t)?offTeam.delete(t):offTeam.add(t);b.classList.toggle("off",offTeam.has(t));b.setAttribute("aria-pressed",!offTeam.has(t));applyFilters()};chips.insertBefore(b,prepBtn)});
+function applyFilters(){document.querySelectorAll("[data-i]").forEach(el=>{const it=ITEMS[+el.dataset.i];el.classList.toggle("hide",off.has(it.type)||offTeam.has(it.team))})}
 prepBtn.onclick=()=>{const on=prepBtn.getAttribute("aria-pressed")!="true";prepBtn.setAttribute("aria-pressed",on);document.getElementById("app").classList.toggle("prep-off",!on)};
 render(start);
 
-/* Details on hover / tap */
-const tip=document.getElementById("tip");
-function showTip(el,x,y){const it=ITEMS[+el.dataset.i];
- tip.innerHTML=`<b>${esc(name(it))}</b><br>${esc(label(it))}<br><span class="k">${esc([fmt(it.date,{weekday:"short",month:"short",day:"numeric"}),TNAME[it.type],it.aud&&it.aud!="—"?it.aud:"",it.owner?"Owner: "+it.owner:"",it.ms?"":it.status].filter(Boolean).join(" · "))}</span>${it.notes?"<br>"+esc(it.notes):""}`;
- tip.style.display="block";tip.style.left=Math.max(8,Math.min(x+14,innerWidth-310))+"px";tip.style.top=Math.min(y+14,innerHeight-tip.offsetHeight-8)+"px"}
-document.addEventListener("mousemove",e=>{const el=e.target.closest("[data-i]");el?showTip(el,e.clientX,e.clientY):tip.style.display="none"});
-document.addEventListener("click",e=>{const el=e.target.closest("[data-i]");el?showTip(el,e.clientX,e.clientY):tip.style.display="none"});
+/* Details window on click */
+const dlg=document.getElementById("dlg"),dbox=document.getElementById("dbox");
+let lastEl=null;
+function openItem(it,el){
+ lastEl=el;dbox.className="box "+it.type;
+ document.getElementById("dcamp").textContent=name(it);
+ document.getElementById("dtitle").textContent=it.ms?label(it):it.task;
+ const rows=[["When",fmt(it.date,{weekday:"long",month:"long",day:"numeric",year:"numeric"})],["Accountable",it.team?it.team+(it.owner?" ("+it.owner+")":""):""],["Audience",it.aud&&it.aud!="—"?it.aud:""],["Status",it.ms?"":it.status],["Notes",it.notes]].filter(r=>r[1]);
+ document.getElementById("dl").innerHTML=rows.map(([k,v])=>`<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join("");
+ dlg.classList.add("on");document.getElementById("dx").focus()}
+function closeDlg(){dlg.classList.remove("on");if(lastEl&&lastEl.focus)lastEl.focus()}
+document.getElementById("dx").onclick=closeDlg;
+dlg.addEventListener("click",e=>{if(e.target===dlg)closeDlg()});
+document.addEventListener("keydown",e=>{if(e.key=="Escape"&&dlg.classList.contains("on"))closeDlg()});
+document.addEventListener("click",e=>{if(dlg.contains(e.target))return;const el=e.target.closest("[data-i]");if(el)openItem(ITEMS[+el.dataset.i],el)});
 </script></body></html>
