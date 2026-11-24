@@ -109,6 +109,28 @@ table.grid{border-collapse:collapse;width:100%;min-width:980px;font-size:13.5px}
 .grid td.c.r{border-right:1px solid var(--line)}
 .pill{display:inline-block;font:700 11px var(--body);padding:4px 7px;border-radius:6px;color:#fff;white-space:nowrap}
 .pill.M{background:#2e86de}.pill.S{background:#e67e00}
+button.pill{border:0;cursor:pointer;position:relative;min-height:30px;padding:6px 9px}
+button.pill:hover{filter:brightness(1.1);box-shadow:0 2px 6px rgba(0,0,0,.18)}
+button.pill.ed:after{content:"";position:absolute;top:-3px;right:-3px;width:9px;height:9px;border-radius:50%;background:var(--accent);border:2px solid var(--surface)}
+#tdlg{position:fixed;inset:0;z-index:40;display:none;align-items:center;justify-content:center;background:rgba(10,12,16,.5);padding:16px}
+#tdlg.on{display:flex}
+#tdlg .box{max-width:540px}
+#tdlg label{display:block;font-size:13px;font-weight:600;color:var(--muted);margin:14px 0 6px}
+#tdlg textarea,#tdlg input{width:100%;font:15px/1.5 var(--body);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:10px 12px}
+#tdlg textarea{min-height:120px;resize:vertical}
+#tdlg textarea:focus,#tdlg input:focus{outline:2px solid var(--accent);outline-offset:0;border-color:transparent}
+.tmeta{display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:13.5px;color:var(--muted)}
+.acts{display:flex;gap:8px;justify-content:space-between;align-items:center;margin-top:18px;flex-wrap:wrap}
+.acts .r{display:flex;gap:8px}
+.linkbtn{border:0;background:none;color:var(--muted);font:500 13.5px var(--body);text-decoration:underline;cursor:pointer;padding:8px 0}
+.saved{font-size:13px;color:var(--launch);font-weight:600}
+.oncal{margin-top:16px;border-top:1px solid var(--line);padding-top:12px}
+.oncal h3{font:700 12px var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
+.oncal ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px;max-height:220px;overflow:auto}
+.oncal button{display:flex;gap:10px;width:100%;text-align:left;border:0;background:color-mix(in srgb,var(--c,var(--accent)) 9%,var(--surface));color:var(--ink);font:14px/1.35 var(--body);padding:8px 10px;border-radius:8px;cursor:pointer}
+.oncal button:hover{background:color-mix(in srgb,var(--c,var(--accent)) 18%,var(--surface))}
+.oncal .d{flex:none;width:92px;font-weight:700;font-variant-numeric:tabular-nums}
+.oncal .none{font-size:14px}
 .grid tbody tr:hover td{background:color-mix(in srgb,var(--ink) 4%,var(--surface))}
 .trk-bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}
 .trk-bar .stats{display:flex;gap:8px;flex-wrap:wrap}
@@ -217,7 +239,7 @@ table.trk{border-collapse:collapse;width:100%;min-width:900px;font-size:14px}
  <div class="view" id="v-launch-tactics" hidden>
   <header class="pagehead">
    <h1>Launch Tactics: what we do for each launch</h1>
-   <p>Read across a row to see where each tactic is used. Read down a column to see everything we do for one launch. Each launch column is split in two: <span class="pill M">Marketing</span> on the left, <span class="pill S">Sales</span> on the right.</p>
+   <p>Read across a row to see where each tactic is used. Read down a column to see everything we do for one launch. Each launch column is split in two: <span class="pill M">Marketing</span> on the left, <span class="pill S">Sales</span> on the right. <b>Click any Marketing or Sales box</b> to see the details and edit them.</p>
   </header>
   <div class="tbox"><table class="grid" id="tgrid"></table></div>
   <p class="small">Rows from "Next morning at 9 am" down come from the Sales &amp; Marketing plan for Fern.</p>
@@ -235,6 +257,13 @@ table.trk{border-collapse:collapse;width:100%;min-width:900px;font-size:14px}
   <p class="warnnote">Entries save in the browser you type them in. They don't sync to other people yet. Use Download to share the list.</p>
  </div>
 </div>
+<div id="tdlg" role="dialog" aria-modal="true" aria-labelledby="ttitle"><div class="box" id="tbox"><button class="x" id="tx" aria-label="Close details">&times;</button><div class="eyebrow" id="tlaunch"></div><h2 id="ttitle"></h2><div class="tmeta" id="tmeta"></div>
+<label for="twhen">When</label><input id="twhen">
+<label for="towner">Who does it</label><input id="towner" placeholder="Name(s)">
+<label for="tdet">Details</label><textarea id="tdet"></textarea>
+<div class="acts"><button class="linkbtn" id="treset">Reset to original</button><div class="r"><span class="saved" id="tsaved" hidden>Saved</span><button class="btn" id="tcancel">Cancel</button><button class="btn pri" id="tsave">Save</button></div></div>
+<div class="oncal"><h3>On the calendar</h3><ul id="tcal"></ul></div>
+<p class="small" style="margin:12px 0 0">Edits save in this browser. A red dot marks items you've edited.</p></div></div>
 <div id="dlg" role="dialog" aria-modal="true" aria-labelledby="dtitle"><div class="box" id="dbox"><button class="x" id="dx" aria-label="Close details">&times;</button><div class="eyebrow" id="dcamp"></div><h2 id="dtitle"></h2><dl id="dl"></dl></div></div>
 <script>
 const N=(date,game,task,aud,owner,status,notes,team)=>({date,game,task,aud,owner:owner||"",status:status||"Not started",notes:notes||"",team:team||""});
@@ -550,8 +579,68 @@ const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"
 const COLS=[["WCE","New games","Monthly releases (Sept – April)","launch"],["WCE","Cabinets","Vertical & horizontal · Launch Dec 8","cab"],["WCE","PFH kiosks","From $3,999 · Launch Jan 5","pfh"],["WCE","Board sales","Games without rev share · Launch Jan 12","board"],["YES","New games","Monthly releases (Sept – April)","launch"],["YES","Board sales","Games without rev share · Launch Jan 12","board"]];
 const ROWS=[["Email distributors and operators to announce the launch", ["M", "", "", "", "M", ""]], ["Post the launch on our company LinkedIn page", ["M", "", "", "M", "M", "M"]], ["VGT", ["M", "M", "M", "M", "M", "M"]], ["Post on social media so players know about it", ["M", "", "", "", "M", ""]], ["Text players that the new game is live", ["M", "", "", "", "M", ""]], ["Mail a printed flyer to customers", ["", "", "M", "M", "", "M"]], ["Tease the new kiosks on social and email before launch (starts Nov 28)", ["", "", "M", "", "", ""]], ["Email new distributor lists (Baniella, Premieros) to get them to add PFH", ["", "", "M", "", "", ""]], ["Gather the trailer, screenshots and game overview for each new game", ["M", "", "", "", "M", ""]], ["Write a ready-to-send email that Sales sends to their customers", ["MS", "MS", "MS", "MS", "MS", "MS"]], ["Call customers after the email to follow up", ["", "S", "S", "S", "", "S"]], ["Next morning at 9 am, send each rep the list of customers who clicked the email", ["", "M", "M", "M", "", "M"]], ["Call every customer who clicked the email, the same day", ["", "S", "S", "S", "", "S"]], ["Log every call and email in the shared sales tracker", ["", "S", "S", "S", "", "S"]], ["Answer every reply and sales@wce.com lead within 4 business hours", ["", "S", "S", "S", "", "S"]], ["Every Friday, review the tracker to see what's working", ["", "M", "M", "M", "", "M"]], ["Sort board customers into 3 groups (rev share / said no to rev share / buy competitor boards) so each gets the right message", ["", "", "", "S", "", "S"]], ["Send LinkedIn connection requests to new distributors", ["", "", "S", "", "", ""]], ["Run kiosk demos and take orders", ["", "", "S", "", "", ""]]];
 let h=`<thead><tr class="brand"><th></th><th colspan="8" class="wce">WCE</th><th colspan="4" class="yes">YES</th></tr><tr class="colh"><th style="text-align:left;padding-left:14px">Tactic</th>${COLS.map(c=>`<th colspan="2" class="lch ${c[3]}">${esc(c[1])}<small>${esc(c[2])}</small></th>`).join("")}</tr><tr class="half"><th></th>${COLS.map(()=>`<th>Marketing</th><th>Sales</th>`).join("")}</tr></thead><tbody>`;
-h+=ROWS.map(([t,codes])=>`<tr><td class="tac">${esc(t)}</td>${codes.map(c=>`<td class="c">${c.includes("M")?'<span class="pill M">Marketing</span>':""}</td><td class="c r">${c.includes("S")?'<span class="pill S">Sales</span>':""}</td>`).join("")}</tr>`).join("");
-document.getElementById("tgrid").innerHTML=h+"</tbody>";
+const WHEN=["Each new game's launch (monthly, Sept – April)","Launch Dec 8, then a push every month through April","Launch Jan 5, then a push every month through April","Launch Jan 12, then a push every month through April","Each new game's launch (monthly, Sept – April)","Launch Jan 12, then a push every month through April"];
+const DM=["Send the launch email to distributors and operators on launch day, with the trailer, screenshots and game sheet.",
+"Post the launch on the company LinkedIn page on launch day.",
+"Post the launch on VGT.",
+"Post on social on launch day so players know the new game is live.",
+"Text players on launch day that the new game is live.",
+"Design the flyer, send it to print, and mail it so it lands the week of the launch.",
+"Teaser email and social posts before the launch, no details yet. Starts Nov 28.",
+"Email the Baniella and Premieros lists to get new distributors to add Play From Home kiosks. Follow-up email one week later.",
+"Collect the trailer, screenshots and game overview about two weeks before launch.",
+"Write the email and give it to Sales before launch, with links and the game sheet.",
+"","Next morning by 9 am, send each rep the list of their customers who clicked the email.","","","",
+"Every Friday, review the tracker: who was contacted, who is interested, what was ordered.","","",""];
+const DS=["","","","","","","","","",
+"Send the ready-made email to your own customers.",
+"Call customers after the email to answer questions and take orders.",
+"","Call every customer who clicked, the same day you get the list. Then send the follow-up email.",
+"Log every call and email in the Sales Tracker the same day.",
+"Answer every reply and sales@wce.com lead within 4 business hours.",
+"",
+"Sort board customers into 3 groups: on rev share, said no to rev share, buy competitor boards. Each group gets its own message.",
+"Send LinkedIn connection requests to the new distributors on the Baniella and Premieros lists.",
+"Show interested distributors the kiosk (demo) and take orders."];
+const DEF=(r,c,t)=>{let d=t=="M"?DM[r]:DS[r];if(t=="S"&&r==9&&COLS[c][1]=="New games")d="Contact your customers before launch: tell them a new game is coming and share the game sheet + trailer. That's the only Sales step for new games.";
+ return {when:WHEN[c],owner:t=="M"?"Karla":"Sales reps",det:d}};
+const TKEY="pgs-tactic-details-v1";let ED={};try{ED=JSON.parse(localStorage.getItem(TKEY)||"{}")}catch(e){ED={}}
+const kid=(r,c,t)=>r+"-"+c+"-"+t;
+const pill=(r,c,t)=>`<button class="pill ${t}${ED[kid(r,c,t)]?" ed":""}" data-r="${r}" data-c="${c}" data-t="${t}" aria-label="${t=="M"?"Marketing":"Sales"} details: ${esc(ROWS[r][0])}, ${esc(COLS[c][0]+" "+COLS[c][1])}">${t=="M"?"Marketing":"Sales"}</button>`;
+function drawGrid(){document.getElementById("tgrid").innerHTML=h+ROWS.map(([t,codes],r)=>`<tr><td class="tac">${esc(t)}</td>${codes.map((c,ci)=>`<td class="c">${c.includes("M")?pill(r,ci,"M"):""}</td><td class="c r">${c.includes("S")?pill(r,ci,"S"):""}</td>`).join("")}</tr>`).join("")+"</tbody>"}
+drawGrid();
+const td=document.getElementById("tdlg");let cur=null,lastBtn=null;
+const $=id=>document.getElementById(id);
+function openT(r,c,t,btn){cur={r,c,t};lastBtn=btn;const v=Object.assign(DEF(r,c,t),ED[kid(r,c,t)]||{});
+ $("tbox").className="box "+COLS[c][3];$("tlaunch").textContent=COLS[c][0]+" · "+COLS[c][1];$("ttitle").textContent=ROWS[r][0];
+ $("tmeta").innerHTML=`<span class="pill ${t}">${t=="M"?"Marketing":"Sales"}</span> is accountable`;
+ $("twhen").value=v.when;$("towner").value=v.owner;$("tdet").value=v.det;$("tsaved").hidden=true;calList(r,c,t);
+ td.classList.add("on");$("tdet").focus()}
+function closeT(){td.classList.remove("on");if(lastBtn)lastBtn.focus()}
+document.getElementById("tgrid").addEventListener("click",e=>{const b=e.target.closest("button.pill");if(b)openT(+b.dataset.r,+b.dataset.c,b.dataset.t,b)});
+$("tsave").onclick=()=>{const k=kid(cur.r,cur.c,cur.t);ED[k]={when:$("twhen").value,owner:$("towner").value,det:$("tdet").value};
+ try{localStorage.setItem(TKEY,JSON.stringify(ED))}catch(e){}drawGrid();$("tsaved").hidden=false;setTimeout(closeT,500)};
+$("treset").onclick=()=>{delete ED[kid(cur.r,cur.c,cur.t)];try{localStorage.setItem(TKEY,JSON.stringify(ED))}catch(e){}const v=DEF(cur.r,cur.c,cur.t);$("twhen").value=v.when;$("towner").value=v.owner;$("tdet").value=v.det;drawGrid()};
+/* Cross-reference: calendar items for this tactic, launch and team */
+const RX=[/^Email (distributors|operators)/,/LinkedIn/,/VGT/,/social/i,/^Text players/,/flyer|mailer/i,/[Tt]eas/,/don't carry Play From Home/,/trailer, screenshots|game sheet|graphics/,
+ null,/^Call/,/^By 9 am/,/^Call every customer who clicked/,null,null,null,/groups/,/LinkedIn connection/,/demo/i];
+const NOTE={13:"Every day, after each call and email (not on the calendar as its own item).",14:"Every day (not on the calendar as its own item).",15:"Every Friday (not on the calendar as its own item)."};
+function matches(r,c,t){const ty=COLS[c][3],team=t=="M"?"Marketing":"Sales";
+ return ITEMS.filter(it=>{if(it.ms||it.type!=ty||it.team!=team)return false;
+  if(r==9)return t=="M"?/^(Write|Build|Give Sales|Send Sales)/.test(it.task):/^Contact your customers|then send them/.test(it.task);
+  if(r==13)return /NetSuite|tracker/i.test(it.notes)||/then send them/.test(it.task);
+  return RX[r]?RX[r].test(it.task):false}).sort((a,b)=>a.date<b.date?-1:1)}
+function calList(r,c,t){const m=matches(r,c,t),ul=$("tcal");
+ let html=m.map(it=>`<li><button class="${it.type}" data-i="${it.i}"><span class="d">${fmt(it.date,{weekday:"short",month:"short",day:"numeric"})}</span><span>${esc(it.task)}</span></button></li>`).join("");
+ if(!m.length)html=`<li class="none small">${NOTE[r]||"Not on the calendar yet."}</li>`;
+ if(m.length&&COLS[c][0]=="YES")html=`<li class="small">The calendar doesn't split WCE and YES, so these are the shared dates.</li>`+html;
+ ul.innerHTML=html}
+$("tcal").addEventListener("click",e=>{const b=e.target.closest("button[data-i]");if(!b)return;e.stopPropagation();const it=ITEMS[+b.dataset.i];
+ td.classList.remove("on");location.hash="calendar";const k=MONTHS.findIndex(([y,mo])=>it.date.slice(0,7)==iso(y,mo,1).slice(0,7));if(k>=0)render(k);
+ const el=document.querySelector(`.cal [data-i="${it.i}"]`);if(el)el.scrollIntoView({block:"center"});openItem(it,el)});
+$("tcancel").onclick=closeT;$("tx").onclick=closeT;
+td.addEventListener("click",e=>{if(e.target===td)closeT()});
+addEventListener("keydown",e=>{if(e.key=="Escape"&&td.classList.contains("on"))closeT()});
 
 /* Sales Tracker */
 const KEY="pgs-sales-tracker-v1",CAMPS=["","PFH kiosks","Boards","Cabinets","New games"],STAT=["","Contacted","Interested","Demo booked","Ordered","Not now"];
