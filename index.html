@@ -152,7 +152,15 @@ table.trk{border-collapse:collapse;width:100%;min-width:900px;font-size:14px}
 .master{display:inline-flex;align-items:center;gap:8px;text-decoration:none}
 .kits{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,380px),1fr));gap:16px}
 .kit{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
-.kit .hd{padding:16px 18px 12px;border-top:5px solid var(--c);background:color-mix(in srgb,var(--c) 7%,var(--surface))}
+.kit .hd{padding:14px 18px 12px;border-top:6px solid var(--kc);background:color-mix(in srgb,var(--kc) 9%,var(--surface))}
+.kit.coming{--kc:#d92d2d}.kit.out{--kc:#1e9e5a}
+.kit .st{display:inline-block;font:700 11.5px var(--body);letter-spacing:.04em;text-transform:uppercase;color:#fff;background:var(--kc);padding:3px 9px;border-radius:999px;margin-bottom:8px}
+.kit .when{color:var(--kc);font-weight:600}
+.ksec{font-size:20px;font-weight:800;display:flex;align-items:center;gap:10px;margin:8px 0 12px}
+.ksec:before{content:"";width:12px;height:12px;border-radius:50%;background:var(--kc)}
+.ksec span{font:700 13px var(--body);background:var(--line);border-radius:999px;padding:2px 9px}
+.ksec.coming{--kc:#d92d2d}.ksec.out{--kc:#1e9e5a}
+#kits .kits+.ksec{margin-top:28px}
 .kit .hd h2{font-size:19px;font-weight:800}
 .kit .tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
 .kit .tag{font:600 12px var(--body);padding:2px 8px;border-radius:999px;background:var(--line);color:var(--ink)}
@@ -279,7 +287,7 @@ table.trk{border-collapse:collapse;width:100%;min-width:900px;font-size:14px}
    <input id="ksearch" type="search" placeholder="Search games and products" aria-label="Search games and products">
    <a class="btn pri master" id="kmaster" target="_blank" rel="noopener">Open the master folder (02_External Download)</a>
   </div>
-  <div class="kits" id="kits"></div>
+  <div id="kits"></div>
   <p class="small">Links open in SharePoint. You need to be signed in to the Pong Studios SharePoint to see them.</p>
   <p class="warnnote">Links you paste save in your browser right away. To make them show for the whole Sales team, send them to Claude to add to the page.</p>
  </div>
@@ -685,25 +693,40 @@ addEventListener("keydown",e=>{if(e.key=="Escape"&&td.classList.contains("on"))c
 const MASTER="https://pongstudios.sharepoint.com/:f:/s/Marketing/IgBLaigGG2qLSZblGS6YhSoCAYbek2eTqEQD-mQrbI53pmM?e=QzDtLz";
 const ASSETS=[["sheet","Sales sheet (PDF)","One page to send or print"],["video","Video ad","For email, LinkedIn and social"]];
 const KITS=[
- {name:"Jewels of Cleopatra",brand:"WCE · PFH",kind:"New game",cal:"Jewels of Cleopatra",type:"launch",links:{}},
- {name:"Robin Hood's Thanksgiving Feast",brand:"WCE · PFH",kind:"New game",cal:"Robin's Arrow",type:"launch",links:{}},
- {name:"Lanterns Rising",brand:"WCE · PFH",kind:"New game",cal:"Lanterns Rising",type:"launch",links:{}},
- {name:"Nebraska Skill Rush Series 1",brand:"YES",kind:"Game series",cal:"",type:"board",links:{}}
+ {name:"Jewels of Cleopatra",brand:"WCE · PFH",kind:"New game",cal:"Jewels of Cleopatra",links:{}},
+ {name:"Robin Hood's Thanksgiving Feast",brand:"WCE · PFH",kind:"New game",cal:"Robin's Arrow",links:{}},
+ {name:"Lanterns Rising",brand:"WCE · PFH",kind:"New game",cal:"Lanterns Rising",links:{}},
+ {name:"Nebraska Skill Rush Series 1",brand:"YES",kind:"Game series",cal:"",status:"out",links:{}}
 ];
+/* Add every upcoming game and product from the calendar */
+{const norm=x=>x.toLowerCase().replace(/[^a-z]/g,"").replace(/s/g,"");
+ const endOf=g=>(ITEMS.find(i=>i.ms&&i.end&&i.game==g)||{}).date||"";
+ KITS.forEach(k=>{if(!k.cal)return;const it=ITEMS.find(i=>i.ms&&!i.end&&i.game==k.cal);if(it){k.live=it.date;k.ci=it.i}k.ends=endOf(k.cal)});
+ ITEMS.filter(i=>i.ms&&!i.end&&(i.type=="launch"||i.type=="v2")).sort((x,y)=>x.date<y.date?-1:1).forEach(it=>{
+  const v2=it.type=="v2",names=v2?it.game.replace(/^V2 Sweeps:\s*/,"").split(/\s*\+\s*/):[it.game];
+  names.forEach(nm=>{const ex=KITS.find(k=>norm(k.name)==norm(nm)||k.cal==nm);
+   if(ex){if(v2&&ex.brand!="V2 Sweeps")ex.also=`Also on V2 Sweeps, live ${fmt(it.date,{month:"short",day:"numeric"})}`;return}
+   KITS.push({name:nm,brand:v2?"V2 Sweeps":"WCE · PFH",kind:"New game",cal:v2?"":nm,live:it.date,ci:it.i,ends:v2?"":endOf(nm),links:{}})})});
+ [["Cabinets","cab","Vertical & horizontal"],["Play From Home kiosks","pfh","From $3,999"],["Game boards","board","No rev share"]].forEach(([nm,ty,sub])=>{
+  const it=ITEMS.find(i=>i.ms&&i.type==ty)||ITEMS.filter(i=>i.type==ty&&i.aud=="Distributors").sort((x,y)=>x.date<y.date?-1:1)[0];
+  KITS.push({name:nm,brand:"WCE",kind:"Product · "+sub,cal:"",live:it?it.date:"",ci:it?it.i:undefined,links:{}})});
+ KITS.forEach(k=>{k.st=k.status||(k.live&&k.live<=TODAY?"out":k.live?"coming":"out")});}
 document.getElementById("kmaster").href=MASTER;
 const LKEY="pgs-kit-links-v1";let KL={};try{KL=JSON.parse(localStorage.getItem(LKEY)||"{}")}catch(e){KL={}}
 let KEDIT="";
 const klink=(n,id)=>KL[KITS[n].name+"|"+id]??KITS[n].links[id]??"";
 const kdate=it=>fmt(it.date,{month:"short",day:"numeric",year:"numeric"});
-function kitWhen(k){if(!k.cal)return "";const ms=ITEMS.filter(it=>it.game==k.cal&&it.ms);
- const live=ms.find(it=>!it.end),end=ms.find(it=>it.end);
- return [live?"Live "+kdate(live):"",end?"Ends "+kdate(end):""].filter(Boolean).join(" · ")}
+const kd=d=>fmt(d,{month:"short",day:"numeric",year:"numeric"});
+function kitWhen(k){return [k.live?(k.st=="out"?"Out since "+kd(k.live):"Coming "+kd(k.live)):(k.st=="out"?"Out now":""),k.ends?"Ends "+kd(k.ends):"",k.also||""].filter(Boolean).join(" · ")}
 function drawKits(){const q=document.getElementById("ksearch").value.trim().toLowerCase();
- const list=KITS.filter(k=>!q||(k.name+" "+k.brand+" "+k.kind).toLowerCase().includes(q));
- document.getElementById("kits").innerHTML=list.length?list.map(k=>{const w=kitWhen(k);const n=KITS.indexOf(k);
-  return `<article class="kit ${k.type}"><div class="hd"><h2>${esc(k.name)}</h2><div class="tags"><span class="tag">${esc(k.brand)}</span><span class="tag">${esc(k.kind)}</span></div>${w?`<div class="when">${esc(w)}</div>`:""}</div>
+ const all=KITS.filter(k=>!q||(k.name+" "+k.brand+" "+k.kind).toLowerCase().includes(q));
+ const coming=all.filter(k=>k.st=="coming").sort((x,y)=>x.live<y.live?-1:1),out=all.filter(k=>k.st=="out").sort((x,y)=>(y.live||"")<(x.live||"")?-1:1);
+ const card=k=>{const w=kitWhen(k);const n=KITS.indexOf(k);
+  return `<article class="kit ${k.st}"><div class="hd"><span class="st">${k.st=="out"?"Out now":"Not live yet"}</span><h2>${esc(k.name)}</h2><div class="tags"><span class="tag">${esc(k.brand)}</span><span class="tag">${esc(k.kind)}</span></div>${w?`<div class="when">${esc(w)}</div>`:""}</div>
   <ul>${ASSETS.map(([id,lab,sub])=>{const u=klink(n,id);return `<li><div class="an">${esc(lab)}<small>${esc(sub)}</small></div>${u&&!(KEDIT==n+"-"+id)?`<a class="kbtn go" href="${esc(u)}" target="_blank" rel="noopener">Open</a><button class="kbtn" data-copy="${esc(u)}">Copy link</button><button class="kedit" data-kedit="${n}-${id}" aria-label="Change ${esc(lab)} link">Edit</button>`:`<form class="kin" data-kset="${n}-${id}"><input type="url" placeholder="Paste link here" value="${esc(u||"")}" aria-label="Paste the ${esc(lab)} link for ${esc(k.name)}"><button class="kbtn go">Save</button></form>`}</li>`}).join("")}</ul>
-  <div class="ft">${k.cal?`<button data-kcal="${n}">See it on the calendar</button>`:"Not on the calendar yet"}</div></article>`}).join(""):`<div class="empty">No match.</div>`}
+  <div class="ft">${k.ci!=null?`<button data-kcal="${n}">See it on the calendar</button>`:"Not on the calendar yet"}</div></article>`};
+ const sec=(t,cls,l)=>l.length?`<h2 class="ksec ${cls}">${t} <span>${l.length}</span></h2><div class="kits">${l.map(card).join("")}</div>`:"";
+ document.getElementById("kits").innerHTML=(sec("Not live yet","coming",coming)+sec("Out now","out",out))||`<div class="empty">No match.</div>`}
 document.getElementById("ksearch").addEventListener("input",drawKits);
 document.getElementById("kits").addEventListener("submit",e=>{const f=e.target.closest("[data-kset]");if(!f)return;e.preventDefault();
  const v=f.querySelector("input").value.trim();const [n,id]=f.dataset.kset.split("-");
@@ -714,7 +737,7 @@ const say=m=>{toast.textContent=m;toast.style.display="block";clearTimeout(say.t
 document.getElementById("kits").addEventListener("click",async e=>{
  const c=e.target.closest("[data-copy]");if(c){try{await navigator.clipboard.writeText(c.dataset.copy);say("Link copied")}catch(err){say("Copy didn't work here. Use Open, then copy from the address bar.")}return}
  const ed=e.target.closest("[data-kedit]");if(ed){KEDIT=ed.dataset.kedit;drawKits();const i=document.querySelector(`[data-kset="${KEDIT}"] input`);if(i){i.focus();i.select()}return}
- const g=e.target.closest("[data-kcal]");if(g){const k=KITS[+g.dataset.kcal];const it=ITEMS.filter(i=>i.game==k.cal&&i.ms&&!i.end)[0]||ITEMS.find(i=>i.game==k.cal);if(!it)return;
+ const g=e.target.closest("[data-kcal]");if(g){const k=KITS[+g.dataset.kcal];const it=ITEMS[k.ci];if(!it)return;
   location.hash="calendar";const m=MONTHS.findIndex(([y,mo])=>it.date.slice(0,7)==iso(y,mo,1).slice(0,7));if(m>=0)render(m);
   const el=document.querySelector(`.cal [data-i="${it.i}"]`);if(el)el.scrollIntoView({block:"center"});openItem(it,el)}});
 drawKits();
