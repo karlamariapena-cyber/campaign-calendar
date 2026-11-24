@@ -718,7 +718,7 @@ const KITS=[
 document.getElementById("kmaster").href=MASTER;
 /* LINKS: one entry per game or product, by its name on this page. sheet = sales sheet, video = video ad. */
 const LINKS={
- "Jewels of Cleopatra":{sheet:"",video:""}
+ "Jewels of Cleopatra":{sheet:"https://pongstudios.sharepoint.com/:b:/r/sites/Marketing/Shared%20Documents/02_External%20Download/We%20Create%20Entertainment/Play%20From%20Home/Game%20Slick%20Sheets/Jewels%20of%20Cleopatra.pdf?d=we99b4a408bbe4c788b67cff6d50bb291&csf=1&web=1&e=RaZprd",video:""}
 };
 const klink=(n,id)=>(LINKS[KITS[n].name]||{})[id]||KITS[n].links[id]||"";
 const kdate=it=>fmt(it.date,{month:"short",day:"numeric",year:"numeric"});
