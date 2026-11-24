@@ -147,6 +147,27 @@ table.trk{border-collapse:collapse;width:100%;min-width:900px;font-size:14px}
 .trk .del{border:0;background:none;color:var(--muted);font-size:20px;cursor:pointer;width:36px;height:36px;border-radius:50%}
 .trk .del:hover{background:var(--line);color:var(--ink)}
 .empty{padding:28px;text-align:center;color:var(--muted)}
+.kbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+.kbar input{font:16px var(--body);color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:10px 12px;min-width:260px}
+.master{display:inline-flex;align-items:center;gap:8px;text-decoration:none}
+.kits{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,380px),1fr));gap:16px}
+.kit{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
+.kit .hd{padding:16px 18px 12px;border-top:5px solid var(--c);background:color-mix(in srgb,var(--c) 7%,var(--surface))}
+.kit .hd h2{font-size:19px;font-weight:800}
+.kit .tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.kit .tag{font:600 12px var(--body);padding:2px 8px;border-radius:999px;background:var(--line);color:var(--ink)}
+.kit .when{font-size:13.5px;color:var(--muted);margin-top:6px}
+.kit ul{list-style:none;margin:0;padding:6px 10px 10px;display:flex;flex-direction:column}
+.kit li{display:flex;align-items:center;gap:10px;padding:9px 8px;border-bottom:1px solid var(--line)}
+.kit li:last-child{border-bottom:0}
+.kit .an{flex:1;min-width:0;font-weight:600;font-size:14.5px}
+.kit .an small{display:block;font-weight:400;color:var(--muted);font-size:12.5px}
+.kbtn{flex:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:600 13px var(--body);padding:7px 11px;border-radius:8px;cursor:pointer;text-decoration:none;min-height:34px;display:inline-flex;align-items:center}
+.kbtn.go{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.kbtn[aria-disabled="true"]{opacity:.45;cursor:default}
+.kit .ft{margin-top:auto;padding:10px 18px 14px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;border-top:1px solid var(--line);font-size:13px;color:var(--muted)}
+.kit .ft button{border:0;background:none;color:var(--ink);text-decoration:underline;font:500 13px var(--body);cursor:pointer;padding:4px 0}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--surface);padding:10px 16px;border-radius:10px;font-size:14px;z-index:50;display:none}
 .warnnote{font-size:13.5px;color:var(--muted);background:color-mix(in srgb,var(--pfh) 10%,var(--surface));border:1px solid color-mix(in srgb,var(--pfh) 30%,var(--line));border-radius:10px;padding:10px 14px}
 /* team tags + details window */
 .tm{display:inline-block;font:700 10.5px var(--body);letter-spacing:.02em;padding:1px 5px;border-radius:4px;margin-right:5px;color:#fff;background:#6a707c;vertical-align:1px;white-space:nowrap}.tm.M{background:#2e86de}.tm.S{background:#e67e00}
@@ -171,6 +192,7 @@ table.trk{border-collapse:collapse;width:100%;min-width:900px;font-size:14px}
   <a href="#calendar" data-v="calendar">Calendar</a>
   <a href="#launch-tactics" data-v="launch-tactics">Launch Tactics</a>
   <a href="#sales-tracker" data-v="sales-tracker">Sales Tracker</a>
+  <a href="#marketing-kits" data-v="marketing-kits">MARKETING KITS</a>
  </nav>
  <div class="view" id="v-calendar">
  <header class="top">
@@ -243,6 +265,18 @@ table.trk{border-collapse:collapse;width:100%;min-width:900px;font-size:14px}
   </header>
   <div class="tbox"><table class="grid" id="tgrid"></table></div>
   <p class="small">Rows from "Next morning at 9 am" down come from the Sales &amp; Marketing plan for Fern.</p>
+ </div>
+ <div class="view" id="v-marketing-kits" hidden>
+  <header class="pagehead">
+   <h1>Marketing Kits</h1>
+   <p>Everything Sales needs to share a game or product with customers: video ads, trailers, screenshots, game sheets and brochures. Click <b>Open</b> to view a file, or <b>Copy link</b> to paste it into an email.</p>
+  </header>
+  <div class="kbar">
+   <input id="ksearch" type="search" placeholder="Search games and products" aria-label="Search games and products">
+   <a class="btn pri master" id="kmaster" target="_blank" rel="noopener">Open the master folder (02_External Download)</a>
+  </div>
+  <div class="kits" id="kits"></div>
+  <p class="small">Links open in SharePoint. You need to be signed in to the Pong Studios SharePoint to see them.</p>
  </div>
  <div class="view" id="v-sales-tracker" hidden>
   <header class="pagehead">
@@ -568,7 +602,7 @@ document.addEventListener("click",e=>{if(dlg.contains(e.target))return;const el=
 <script>
 {
 /* Top tabs */
-const views=["calendar","launch-tactics","sales-tracker"];
+const views=["calendar","launch-tactics","sales-tracker","marketing-kits"];
 function show(){const v=views.includes(location.hash.slice(1))?location.hash.slice(1):"calendar";
  views.forEach(x=>{document.getElementById("v-"+x).hidden=x!=v});
  document.querySelectorAll(".nav a").forEach(a=>a.classList.toggle("on",a.dataset.v==v))}
@@ -641,6 +675,36 @@ $("tcal").addEventListener("click",e=>{const b=e.target.closest("button[data-i]"
 $("tcancel").onclick=closeT;$("tx").onclick=closeT;
 td.addEventListener("click",e=>{if(e.target===td)closeT()});
 addEventListener("keydown",e=>{if(e.key=="Escape"&&td.classList.contains("on"))closeT()});
+
+/* Marketing Kits: add a game or product by adding one entry to KITS. Put a SharePoint link in an asset's url when it is ready. */
+const MASTER="https://pongstudios.sharepoint.com/:f:/s/Marketing/IgBLaigGG2qLSZblGS6YhSoCAYbek2eTqEQD-mQrbI53pmM?e=QzDtLz";
+const ASSETS=[["video","Video ad / trailer","For email, LinkedIn and social"],["shots","Screenshots","Game screens to show customers"],["sheet","Game sheet / brochure (PDF)","One page to send or print"],["art","Promo art + logo","For flyers, posters and posts"],["social","Social + email graphics","Ready-sized for posts and eblasts"]];
+const KITS=[
+ {name:"Jewels of Cleopatra",brand:"WCE · PFH",kind:"New game",cal:"Jewels of Cleopatra",type:"launch",links:{}},
+ {name:"Robin Hood's Thanksgiving Feast",brand:"WCE · PFH",kind:"New game",cal:"Robin's Arrow",type:"launch",links:{}},
+ {name:"Lanterns Rising",brand:"WCE · PFH",kind:"New game",cal:"Lanterns Rising",type:"launch",links:{}},
+ {name:"Nebraska Skill Rush Series 1",brand:"YES",kind:"Game series",cal:"",type:"board",links:{}}
+];
+document.getElementById("kmaster").href=MASTER;
+const kdate=it=>fmt(it.date,{month:"short",day:"numeric",year:"numeric"});
+function kitWhen(k){if(!k.cal)return "";const ms=ITEMS.filter(it=>it.game==k.cal&&it.ms);
+ const live=ms.find(it=>!it.end),end=ms.find(it=>it.end);
+ return [live?"Live "+kdate(live):"",end?"Ends "+kdate(end):""].filter(Boolean).join(" · ")}
+function drawKits(){const q=document.getElementById("ksearch").value.trim().toLowerCase();
+ const list=KITS.filter(k=>!q||(k.name+" "+k.brand+" "+k.kind).toLowerCase().includes(q));
+ document.getElementById("kits").innerHTML=list.length?list.map(k=>{const w=kitWhen(k);const n=KITS.indexOf(k);
+  return `<article class="kit ${k.type}"><div class="hd"><h2>${esc(k.name)}</h2><div class="tags"><span class="tag">${esc(k.brand)}</span><span class="tag">${esc(k.kind)}</span></div>${w?`<div class="when">${esc(w)}</div>`:""}</div>
+  <ul>${ASSETS.map(([id,lab,sub])=>{const u=k.links[id];return `<li><div class="an">${esc(lab)}<small>${esc(sub)}</small></div>${u?`<a class="kbtn go" href="${esc(u)}" target="_blank" rel="noopener">Open</a><button class="kbtn" data-copy="${esc(u)}">Copy link</button>`:`<a class="kbtn" href="${esc(MASTER)}" target="_blank" rel="noopener" title="Specific link not added yet">Find in master folder</a>`}</li>`}).join("")}</ul>
+  <div class="ft">${k.cal?`<button data-kcal="${n}">See it on the calendar</button>`:"Not on the calendar yet"}</div></article>`}).join(""):`<div class="empty">No match.</div>`}
+document.getElementById("ksearch").addEventListener("input",drawKits);
+const toast=document.createElement("div");toast.className="toast";toast.setAttribute("role","status");document.body.appendChild(toast);
+const say=m=>{toast.textContent=m;toast.style.display="block";clearTimeout(say.t);say.t=setTimeout(()=>toast.style.display="none",1800)};
+document.getElementById("kits").addEventListener("click",async e=>{
+ const c=e.target.closest("[data-copy]");if(c){try{await navigator.clipboard.writeText(c.dataset.copy);say("Link copied")}catch(err){say("Copy didn't work here. Use Open, then copy from the address bar.")}return}
+ const g=e.target.closest("[data-kcal]");if(g){const k=KITS[+g.dataset.kcal];const it=ITEMS.filter(i=>i.game==k.cal&&i.ms&&!i.end)[0]||ITEMS.find(i=>i.game==k.cal);if(!it)return;
+  location.hash="calendar";const m=MONTHS.findIndex(([y,mo])=>it.date.slice(0,7)==iso(y,mo,1).slice(0,7));if(m>=0)render(m);
+  const el=document.querySelector(`.cal [data-i="${it.i}"]`);if(el)el.scrollIntoView({block:"center"});openItem(it,el)}});
+drawKits();
 
 /* Sales Tracker */
 const KEY="pgs-sales-tracker-v1",CAMPS=["","PFH kiosks","Boards","Cabinets","New games"],STAT=["","Contacted","Interested","Demo booked","Ordered","Not now"];
