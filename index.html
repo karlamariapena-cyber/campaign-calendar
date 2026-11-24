@@ -39,6 +39,11 @@ h1,h2,h3{font-family:var(--display);margin:0;text-wrap:balance}
 .panel h2{font-size:20px;font-weight:800;letter-spacing:-.01em}
 .panel h3{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:8px}
 .panel.main{border-top:4px solid var(--accent)}
+.today .ptitle{font:800 20px var(--display);letter-spacing:.02em;text-transform:uppercase}
+.panel.main .ptitle{color:var(--accent)}
+.panel.pnext{border-top:4px solid #2e86de}.panel.pnext .ptitle{color:#2e86de}
+.panel.popen{border-top:4px solid #e67e00}.panel.popen .ptitle{color:#e67e00}
+.today .count{font-size:14px;padding:2px 10px}
 .eyebrow{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
 .count{background:var(--line);color:var(--ink);border-radius:999px;padding:1px 8px;font-size:12px;letter-spacing:0}
 .count.warn{background:color-mix(in srgb,var(--accent) 16%,var(--surface));color:var(--accent)}
@@ -225,9 +230,9 @@ table.trk{border-collapse:collapse;width:100%;min-width:900px;font-size:14px}
  </header>
 
  <section class="today" aria-label="Today">
-  <div class="panel main"><div class="eyebrow">Today</div><h2 id="tdate"></h2><div id="tlist" class="scroll"></div></div>
-  <div class="panel"><h3>Coming up</h3><div id="nlist" class="scroll"></div></div>
-  <div class="panel"><h3>Still open <span class="count" id="ocount">0</span></h3><div id="olist" class="scroll"></div></div>
+  <div class="panel main"><div class="eyebrow ptitle">Today</div><h2 id="tdate"></h2><div id="tlist" class="scroll"></div></div>
+  <div class="panel pnext"><h3 class="ptitle">Coming up</h3><div id="nlist" class="scroll"></div></div>
+  <div class="panel popen"><h3 class="ptitle">Still open <span class="count" id="ocount">0</span></h3><div id="olist" class="scroll"></div></div>
  </section>
 
  <div class="bar">
