@@ -203,12 +203,22 @@ table.trk{border-collapse:collapse;width:100%;min-width:900px;font-size:14px}
 @media (max-width:480px){.wrap{padding:18px 16px 36px}.top h1{font-size:23px}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 @media print{.bar .chips,.toggle{display:none}body{background:#fff}}
+.progs{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,360px),1fr));gap:16px}
+.prog{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;--pc:var(--plan)}
+.prog .hd{padding:14px 18px 10px;border-top:6px solid var(--pc);background:color-mix(in srgb,var(--pc) 9%,var(--surface))}
+.prog .hd h2{font-size:19px;font-weight:800}
+.prog .hd p{margin:6px 0 0;font-size:14px;color:var(--pc);font-weight:600}
+.prog dl{margin:0;padding:6px 18px 14px;display:grid;grid-template-columns:86px 1fr;gap:8px 12px;font-size:14px}
+.prog dt{font:700 11.5px var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding-top:3px}
+.prog dd{margin:0}
+.prog.cab{--pc:var(--cab)}.prog.pfh{--pc:var(--pfh)}.prog.board{--pc:var(--board)}.prog.launch{--pc:var(--launch)}.prog.plan{--pc:var(--plan)}
 </style></head><body>
 <div class="wrap prep-off" id="app">
  <nav class="nav" aria-label="Pages">
   <a href="#calendar" data-v="calendar">Calendar</a>
   <a href="#launch-tactics" data-v="launch-tactics">Launch Tactics</a>
   <a href="#sales-tracker" data-v="sales-tracker">Sales Tracker</a>
+  <a href="#programs" data-v="programs">Programs</a>
   <a href="#marketing-kits" data-v="marketing-kits">Marketing Kits</a>
  </nav>
  <div class="view" id="v-calendar">
@@ -274,6 +284,13 @@ table.trk{border-collapse:collapse;width:100%;min-width:900px;font-size:14px}
    </ul>
   </div>
  </section>
+ </div>
+ <div class="view" id="v-programs" hidden>
+  <header class="pagehead">
+   <h1>Programs</h1>
+   <p>Every program we run: when it happens, what it is, who we are targeting, how we reach them, and who owns each part. Colours match the calendar.</p>
+  </header>
+  <div class="progs" id="progs"></div>
  </div>
  <div class="view" id="v-launch-tactics" hidden>
   <header class="pagehead">
@@ -632,7 +649,11 @@ document.addEventListener("click",e=>{if(dlg.contains(e.target))return;const el=
 <script>
 {
 /* Top tabs */
-const views=["calendar","launch-tactics","sales-tracker","marketing-kits"];
+const views=["calendar","programs","launch-tactics","sales-tracker","marketing-kits"];
+/* Programs: edit PROGRAMS to update the Programs tab. [name, colour, when, what, who, how, owner] */
+const PROGRAMS=[["Cabinet sales", "cab", "Launch Dec 8, then a push every month on a Tuesday through April", "Sell vertical and horizontal cabinets", "All existing customers (operators and distributors), both horizontal and vertical cabinet clients", "Two e-blasts sent to all customers. Sales follows up with a template email and a call.", "Me: e-blasts and templates. Amer: cabinet photos and video. Sales: follow-up."], ["PFH + kiosk sales", "pfh", "Teaser Nov 28, launch Jan 5, offer ends Jan 31, then a push every month on a Tuesday through April", "Relaunch Play From Home and sell kiosks from $3,999 with no royalties until the kiosk pays for itself", "Distributors, new and existing. New distributors from the Baniella and Premieros lists, plus new customers through the new-customer mailer", "E-blast, a fun mailer, a separate mailer for new customers, and distributor recruiting from the Baniella and Premieros lists. Every touch has a copy template.", "Me: campaign and copy. Amer: design. Suki: PFH software. Sales: follow up on new leads. Fern: approves"], ["Game board sales", "board", "Launch Jan 12, then a push every month on a Tuesday through April", "Sell boards outright to clients who don't like rev share, without losing the rev share business", "Existing clients who don't like the rev share model, plus new customers through the new-customer mailer", "LinkedIn, mailer, e-blast, phone and personal sales emails, plus the new-customer mailer", "Me: materials and timing. Sales: calls and emails."], ["New game launches", "launch", "Every month, Sept to April, with a two-week pre-launch for each game. Next up: Snow Birds Nov 30, Santa's Gift Hunt Dec 2", "Tell operators, players and Sales about each new game", "Distributors and operators, players, and our internal Sales team", "One launch kit: email, SMS, social and LinkedIn, plus a sales email with the game sheet and trailer. Assets go on the Marketing Kits tab.", "Me: launch kit and sends. Amer: videos and screenshots. Sales: contact customers and share the game sheet and trailer"], ["PFH SMS win-back", "plan", "Pilot running now. Next dates to be set", "Bring back lapsed players and growing players", "Lapsed PFH players and growing (rising) players", "SMS with credit offers, starting as a pilot", "Me: messaging. Shemal: analysis and incentives. Amer/Suki: sending the texts (not confirmed yet)"], ["Player Perks loyalty", "plan", "Still a pitch. No date yet", "Club, Plus and VIP tiers based on spend", "WCE and PFH players, plus operators through the operator kits", "Rewrite based on the PFH roadmap", "Me + Amer: copy and operator kits. Shemal: spending bands. Fern: costs. Suki: events and delivery"]];
+{const e=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+document.getElementById("progs").innerHTML=PROGRAMS.map(([n,c,w,wh,who,how,o])=>`<article class="prog ${c}"><div class="hd"><h2>${e(n)}</h2><p>${e(w)}</p></div><dl><dt>What</dt><dd>${e(wh)}</dd><dt>Who</dt><dd>${e(who)}</dd><dt>How</dt><dd>${e(how)}</dd><dt>Owner</dt><dd>${e(o)}</dd></dl></article>`).join("")}
 function show(){const v=views.includes(location.hash.slice(1))?location.hash.slice(1):"calendar";
  views.forEach(x=>{document.getElementById("v-"+x).hidden=x!=v});
  document.querySelectorAll(".nav a").forEach(a=>a.classList.toggle("on",a.dataset.v==v))}
