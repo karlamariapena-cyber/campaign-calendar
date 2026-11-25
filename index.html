@@ -100,11 +100,12 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .pagehead h1{font-size:28px;font-weight:800;letter-spacing:-.02em}
 .pagehead p{margin:4px 0 0;color:var(--muted);font-size:14px;max-width:70ch}
 .tbox{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow-x:auto}
-table.grid{border-collapse:collapse;width:100%;min-width:980px;font-size:13.5px}
+table.grid{border-collapse:collapse;width:100%;min-width:1120px;font-size:13.5px}
 .grid th,.grid td{border-bottom:1px solid var(--line);padding:8px 6px;vertical-align:middle}
 .grid thead th{font:700 12.5px var(--body);text-align:center;line-height:1.3}
 .grid .brand th{font-size:12px;letter-spacing:.08em;text-transform:uppercase;padding:8px}
 .grid .brand .wce{background:color-mix(in srgb,var(--cab) 14%,var(--surface))}
+.grid .brand .plr{background:color-mix(in srgb,var(--plan) 14%,var(--surface))}
 .grid .brand .yes{background:color-mix(in srgb,#e6b800 22%,var(--surface))}
 .grid .colh th.lch{border-top:4px solid var(--c);background:color-mix(in srgb,var(--c) 9%,var(--surface))}
 .grid .colh small{display:block;font-weight:500;color:var(--muted);margin-top:2px}
@@ -314,7 +315,7 @@ table.ptab{border-collapse:collapse;width:100%;min-width:1100px;font-size:14px;l
    <p>Read across a row to see where each tactic is used. Read down a column to see everything we do for one launch. Each launch column is split in two: <span class="pill M">Marketing</span> on the left, <span class="pill S">Sales</span> on the right. <b>Click any Marketing or Sales box</b> to see the details and edit them.</p>
   </header>
   <div class="tbox"><table class="grid" id="tgrid"></table></div>
-  <p class="small">Rows from "Next morning at 9 am" down come from the Sales &amp; Marketing plan for Fern.</p>
+  <p class="small">Every box links to its dates on the calendar. Columns match the Programs tab.</p>
  </div>
  <div class="view" id="v-marketing-kits" hidden>
   <header class="pagehead">
@@ -492,6 +493,10 @@ N("2027-01-27","V2 Sweeps: Blade of Fortune + Jewels of Cleopatra","Contact your
 N("2027-02-24","V2 Sweeps: Sword of Z Nudge + Nordic Paws","Contact your customers: Sword of Z Nudge and Nordic Paws are coming Mar 1, share the sales sheet + video ad","Distributors","Sales reps","","","Sales"),
 // Team meetings
 N("2026-11-25","Planning","Marketing/Sales meeting: walk through the launch and campaign calendar","Team","Karla","","Agree the dates, owners, kiosk offer end date, monthly targets, tracker and new-customer list","Marketing + Sales"),
+// Templates handed to Sales before each launch
+N("2026-12-03","Cabinet Sales","Give Sales the follow-up email and call script for cabinets","Sales team","Karla","","","Marketing"),
+N("2027-01-04","PFH Kiosk","Give Sales the follow-up email and call script for kiosks","Sales team","Karla","","","Marketing"),
+N("2027-01-07","Board Sales","Give Sales the personal emails (one per group) and call script for game boards","Sales team","Karla","","","Marketing"),
 // Next-day follow-up after every push (who is accountable)
 N("2026-12-09","Cabinet Sales","9 am: send each rep the list of who clicked","Sales team","Karla","","","Marketing"),
 N("2026-12-16","Cabinet Sales","9 am: send each rep the list of who clicked","Sales team","Karla","","","Marketing"),
@@ -677,35 +682,14 @@ addEventListener("hashchange",show);show();
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 
 /* Launch Tactics grid (from Launch_Tactics_Grid.xlsx, Launch Plan tab) */
-const COLS=[["WCE","New games","Monthly releases (Sept – April)","launch"],["WCE","Cabinets","Vertical & horizontal · Launch Dec 8","cab"],["WCE","PFH kiosks","From $3,999 · Launch Jan 5","pfh"],["WCE","Board sales","Games without rev share · Launch Jan 12","board"],["YES","New games","Monthly releases (Sept – April)","launch"],["YES","Board sales","Games without rev share · Launch Jan 12","board"]];
-const ROWS=[["Email distributors and operators to announce the launch", ["M", "", "", "", "M", ""]], ["Post the launch on our company LinkedIn page", ["M", "", "", "M", "M", "M"]], ["VGT", ["M", "M", "M", "M", "M", "M"]], ["Post on social media so players know about it", ["M", "", "", "", "M", ""]], ["Text players that the new game is live", ["M", "", "", "", "M", ""]], ["Mail a printed flyer to customers", ["", "", "M", "M", "", "M"]], ["Tease the new kiosks on social and email before launch (starts Nov 28)", ["", "", "M", "", "", ""]], ["Mail a flyer to new distributors (Baniella, Premieros) at their business address", ["", "", "M", "", "", ""]], ["Gather the trailer, screenshots and game overview for each new game", ["M", "", "", "", "M", ""]], ["Write a ready-to-send email that Sales sends to their customers", ["MS", "MS", "MS", "MS", "MS", "MS"]], ["Call customers after the email to follow up", ["", "S", "S", "S", "", "S"]], ["Next morning at 9 am, send each rep the list of customers who clicked the email", ["", "M", "M", "M", "", "M"]], ["Call every customer who clicked the email, the same day", ["", "S", "S", "S", "", "S"]], ["Log every call and email in the shared sales tracker", ["", "S", "S", "S", "", "S"]], ["Answer every reply and sales@wce.com lead within 4 business hours", ["", "S", "S", "S", "", "S"]], ["Every Friday, review the tracker to see what's working", ["", "M", "M", "M", "", "M"]], ["Sort board customers into 3 groups (rev share / said no to rev share / buy competitor boards) so each gets the right message", ["", "", "", "S", "", "S"]], ["Send LinkedIn connection requests to new distributors", ["", "", "S", "", "", ""]], ["Run kiosk demos and take orders", ["", "", "S", "", "", ""]], ["Mail a flyer to new customers outside our list, with a QR code", ["", "", "M", "M", "", "M"]], ["Follow up on mailer leads within 4 hours; a week later, call everyone else who got it", ["", "", "S", "S", "", "S"]]];
-let h=`<thead><tr class="brand"><th></th><th colspan="8" class="wce">WCE</th><th colspan="4" class="yes">YES</th></tr><tr class="colh"><th style="text-align:left;padding-left:14px">Tactic</th>${COLS.map(c=>`<th colspan="2" class="lch ${c[3]}">${esc(c[1])}<small>${esc(c[2])}</small></th>`).join("")}</tr><tr class="half"><th></th>${COLS.map(()=>`<th>Marketing</th><th>Sales</th>`).join("")}</tr></thead><tbody>`;
-const WHEN=["Each new game's launch (monthly, Sept – April)","Launch Dec 8, then a push every month through April","Launch Jan 5, then a push every month through April","Launch Jan 12, then a push every month through April","Each new game's launch (monthly, Sept – April)","Launch Jan 12, then a push every month through April"];
-const DM=["Send the launch email to distributors and operators on launch day, with the trailer, screenshots and game sheet.",
-"Post the launch on the company LinkedIn page on launch day.",
-"Post the launch on VGT.",
-"Post on social on launch day so players know the new game is live.",
-"Text players on launch day that the new game is live.",
-"Design the flyer, send it to print, and mail it so it lands the week of the launch.",
-"Teaser email and social posts before the launch, no details yet. Goes out Dec 17.",
-"Mail a flyer to the Baniella and Premieros lists at their business address (we don't have their emails). QR code responses go to Sales. Lands the week of Jan 11.",
-"Collect the trailer, screenshots and game overview about two weeks before launch.",
-"Write the email and give it to Sales before launch, with links and the game sheet.",
-"","Next morning by 9 am, send each rep the list of their customers who clicked the email.","","","",
-"Every Friday, review the tracker: who was contacted, who is interested, what was ordered.","","","","Design a mailer for prospects outside our current list, send it to print, and add a QR code so responses come in as leads.",""];
-const DS=["","","","","","","","","",
-"Send the ready-made email to your own customers.",
-"Call customers after the email to answer questions and take orders.",
-"","Call every customer who clicked, the same day you get the list. Then send the follow-up email.",
-"Log every call and email in the Sales Tracker the same day.",
-"Answer every reply and sales@wce.com lead within 4 business hours.",
-"",
-"Sort board customers into 3 groups: on rev share, said no to rev share, buy competitor boards. Each group gets its own message.",
-"Send LinkedIn connection requests to the new distributors on the Baniella and Premieros lists.",
-"Show interested distributors the kiosk (demo) and take orders.","","Reply to every QR code response within 4 business hours. One week after the mailer lands, call everyone else who got it."];
-const DEF=(r,c,t)=>{let d=t=="M"?DM[r]:DS[r];if(t=="S"&&r==9&&COLS[c][1]=="New games")d="Contact your customers before launch: tell them a new game is coming and share the game sheet + trailer. That's the only Sales step for new games.";
- return {when:WHEN[c],owner:t=="M"?"Karla":"Sales reps",det:d}};
-const TKEY="pgs-tactic-details-v1";let ED={};try{ED=JSON.parse(localStorage.getItem(TKEY)||"{}")}catch(e){ED={}}
+const COLS=[["WCE", "New games", "Monthly releases (Sept – April)", "launch"], ["WCE", "Cabinets", "Vertical & horizontal · Launch Dec 8", "cab"], ["WCE", "PFH kiosks", "From $3,999 · Launch Jan 5 · Offer ends Jan 31", "pfh"], ["WCE", "Board sales", "One price, no rev share · Launch Jan 12", "board"], ["YES", "New games", "Monthly releases (Sept – April)", "launch"], ["YES", "Board sales", "Once game lists are approved", "board"], ["PFH players", "SMS campaign", "$10 / $20 / $50 credits · Dec 10", "plan"]];
+const ROWS=[["Email distributors and operators to announce each new game", ["M", "", "", "", "M", "", ""]], ["Email all customers on push Tuesdays (launch, then monthly)", ["", "M", "M", "M", "", "M", ""]], ["Teaser email: kiosks and game boards are coming in January", ["", "", "M", "M", "", "M", ""]], ["Post on our company LinkedIn page", ["M", "", "", "M", "M", "M", ""]], ["Post on VGT", ["M", "", "", "", "M", "", ""]], ["Post on social media so players know about it", ["M", "", "", "", "M", "", ""]], ["Text players that the new game is live", ["M", "", "", "", "M", "", ""]], ["Text lapsed and rising players a $10, $20 or $50 credit offer", ["", "", "", "", "", "", "M"]], ["Get the trailer, screenshots and sales sheet ready", ["M", "", "", "", "M", "", ""]], ["Preview next month's games (4th Tuesday)", ["M", "", "", "", "M", "", ""]], ["Mail a printed flyer to current customers", ["", "", "M", "M", "", "M", ""]], ["Mail a flyer to new distributors (Baniella, Premieros) at their business address", ["", "", "M", "", "", "", ""]], ["Mail a flyer to operators buying competitor boards, with a QR code", ["", "", "", "M", "", "", ""]], ["Give Sales the follow-up email and call script before launch", ["", "M", "M", "M", "", "M", ""]], ["Next morning at 9 am, send each rep the customers who clicked", ["", "M", "M", "M", "", "M", ""]], ["Weekly review of the tracker", ["", "M", "M", "M", "", "M", ""]], ["Send the customer list sorted by cabinet type", ["", "S", "", "", "", "", ""]], ["Sort board customers into 3 groups so each gets the right message", ["", "", "", "S", "", "S", ""]], ["Before each new game, tell your customers and share the sales sheet and video ad", ["S", "", "", "", "S", "", ""]], ["Call every customer who clicked, the same day, then send the follow-up email", ["", "S", "S", "S", "", "S", ""]], ["Send LinkedIn connection requests to new distributors", ["", "", "S", "", "", "", ""]], ["Run kiosk demos and take orders", ["", "", "S", "", "", "", ""]], ["Follow up on mailer leads in 4 hours; a week later, call everyone else", ["", "", "S", "S", "", "", ""]], ["Log every call and email in the tracker, same day", ["", "S", "S", "S", "", "S", ""]], ["Answer every reply and sales@wce.com lead within 4 business hours", ["", "S", "S", "S", "", "S", ""]]];
+let h=`<thead><tr class="brand"><th></th><th colspan="8" class="wce">WCE</th><th colspan="4" class="yes">YES</th><th colspan="2" class="plr">PFH players</th></tr><tr class="colh"><th style="text-align:left;padding-left:14px">Tactic</th>${COLS.map(c=>`<th colspan="2" class="lch ${c[3]}">${esc(c[1])}<small>${esc(c[2])}</small></th>`).join("")}</tr><tr class="half"><th></th>${COLS.map(()=>`<th>Marketing</th><th>Sales</th>`).join("")}</tr></thead><tbody>`;
+const WHEN=["Each new game's launch (monthly, Sept – April)", "Launch Dec 8, weekly pushes Dec 15 and 22, then monthly through April", "Teaser Dec 17, launch Jan 5, offer ends Jan 31, then monthly through April", "Teaser Dec 17, launch Jan 12, then monthly through April", "Each new game's launch (monthly, Sept – April)", "Once the YES game lists are approved", "Dec 10 (approved by Fern)"];
+const DM=["Send the launch email to distributors and operators on launch day, with the trailer, screenshots and sales sheet.", "Tuesday email to the full customer list: the launch email, then a reminder every month through April.", "Teaser email Dec 17, no details yet, so January opens warm.", "Post on the company LinkedIn page on launch day and for each push.", "Post the launch or offer on VGT.", "Post on social on launch day so players know the new game is live.", "Text players on launch day that the new game is live.", "One text per group: Rising $10, Stopped – Small $10, Stopped – Valuable $20, Stopped – Valuable Plus $50. Each has a details link and STOP to opt out.", "About two weeks before launch. They go on the Marketing Kits tab for Sales.", "From late January, an email previewing next month's games on the 4th Tuesday.", "Design the flyer, send it to print, and mail it so it lands launch week.", "We don't have their emails, so it goes by mail with a QR code. Lands Jan 11.", "New-customer mailer with a QR code so responses come in as leads. Lands Jan 13.", "Walk Sales through the plan and hand over the templates before each launch.", "The morning after each email, send each rep the list of their customers who clicked.", "Review the tracker every week: who was contacted, who is interested, what was ordered.", "", "", "", "", "", "", "", "", ""];
+const DS=["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "Sort customers by vertical only, horizontal only or both, so each gets the right message.", "Groups: on rev share, said no to rev share, buy competitor boards.", "That's the only Sales step for new games. Links are on the Marketing Kits tab.", "Call everyone on your 9 am list that day, then send the follow-up email from the template.", "Connect with the new distributors on the Baniella and Premieros lists.", "Show interested distributors the kiosk and take orders.", "Reply to every QR code response within 4 business hours. One week after the mailer lands, call everyone who hasn't responded.", "Log every call and email in the tracker the same day.", "Answer every reply and sales@wce.com lead within 4 business hours."];
+const DEF=(r,c,t)=>({when:WHEN[c],owner:t=="M"?"Karla":"Sales reps",det:t=="M"?DM[r]:DS[r]});
+const TKEY="pgs-tactic-details-v2";let ED={};try{ED=JSON.parse(localStorage.getItem(TKEY)||"{}")}catch(e){ED={}}
 const kid=(r,c,t)=>r+"-"+c+"-"+t;
 const pill=(r,c,t)=>`<button class="pill ${t}${ED[kid(r,c,t)]?" ed":""}" data-r="${r}" data-c="${c}" data-t="${t}" aria-label="${t=="M"?"Marketing":"Sales"} details: ${esc(ROWS[r][0])}, ${esc(COLS[c][0]+" "+COLS[c][1])}">${t=="M"?"Marketing":"Sales"}</button>`;
 function drawGrid(){document.getElementById("tgrid").innerHTML=h+ROWS.map(([t,codes],r)=>`<tr><td class="tac">${esc(t)}</td>${codes.map((c,ci)=>`<td class="c">${c.includes("M")?pill(r,ci,"M"):""}</td><td class="c r">${c.includes("S")?pill(r,ci,"S"):""}</td>`).join("")}</tr>`).join("")+"</tbody>"}
@@ -723,14 +707,36 @@ $("tsave").onclick=()=>{const k=kid(cur.r,cur.c,cur.t);ED[k]={when:$("twhen").va
  try{localStorage.setItem(TKEY,JSON.stringify(ED))}catch(e){}drawGrid();$("tsaved").hidden=false;setTimeout(closeT,500)};
 $("treset").onclick=()=>{delete ED[kid(cur.r,cur.c,cur.t)];try{localStorage.setItem(TKEY,JSON.stringify(ED))}catch(e){}const v=DEF(cur.r,cur.c,cur.t);$("twhen").value=v.when;$("towner").value=v.owner;$("tdet").value=v.det;drawGrid()};
 /* Cross-reference: calendar items for this tactic, launch and team */
-const RX=[/^Email (distributors|operators)/,/LinkedIn/,/VGT/,/social/i,/^Text players/,/flyer|mailer/i,/[Tt]eas/,/don't carry Play From Home/,/trailer, screenshots|game sheet|graphics/,
- null,/^Call/,/^By 9 am/,/^Call every customer who clicked/,null,null,null,/groups/,/LinkedIn connection/,/demo/i,/new-customer/i,/mailer and hasn't responded/];
-const NOTE={13:"Every day, after each call and email (not on the calendar as its own item).",14:"Every day (not on the calendar as its own item).",15:"Every Friday (not on the calendar as its own item)."};
+const MATCH=[
+ it=>/^Email (distributors: the new game|operators)/.test(it.task),
+ it=>/^(Email all|Email customers|Second email|Monthly email|Year-end email)/.test(it.task),
+ it=>/[Tt]eas/.test(it.task),
+ it=>/LinkedIn/.test(it.task),
+ it=>/VGT/.test(it.task),
+ it=>/social/i.test(it.task),
+ it=>/^Text players/.test(it.task),
+ it=>/SMS Campaign/.test(it.task),
+ it=>/trailer, screenshots|sales sheet|game sheet|graphics/i.test(it.task),
+ it=>/preview/i.test(it.task),
+ it=>/flyer|mailer/i.test(it.task)&&!/new-(customer|distributor)/i.test(it.task),
+ it=>/new-distributor/i.test(it.task),
+ it=>/new-customer game board/i.test(it.task),
+ it=>/^(Give Sales|Walk Sales|Write)/.test(it.task),
+ it=>/^By 9 am/.test(it.task),
+ it=>false,
+ it=>/customer list/i.test(it.task),
+ it=>/groups/.test(it.task),
+ it=>/^Contact your customers/.test(it.task),
+ it=>/^Call every customer who clicked|then send them/.test(it.task),
+ it=>/LinkedIn connection/.test(it.task),
+ it=>/demo/i.test(it.task),
+ it=>/hasn't responded/.test(it.task),
+ it=>/tracker/i.test(it.notes),
+ it=>false];
+const NOTE={"4": "Not on the calendar as its own item yet.", "15": "Every week (not on the calendar as its own item).", "23": "Every day, after each call and email.", "24": "Every day (not on the calendar as its own item)."};
 function matches(r,c,t){const ty=COLS[c][3],team=t=="M"?"Marketing":"Sales";
- return ITEMS.filter(it=>{if(it.ms||it.type!=ty||it.team!=team)return false;
-  if(r==9)return t=="M"?/^(Write|Build|Give Sales|Send Sales)/.test(it.task):/^Contact your customers|then send them/.test(it.task);
-  if(r==13)return /NetSuite|tracker/i.test(it.notes)||/then send them/.test(it.task);
-  return RX[r]?RX[r].test(it.task):false}).sort((a,b)=>a.date<b.date?-1:1)}
+ const alt=ROWS[r][0].startsWith("Teaser")?["pfh","board"]:[ty];
+ return ITEMS.filter(it=>!it.ms&&alt.includes(it.type)&&it.team==team&&MATCH[r](it)).sort((a,b)=>a.date<b.date?-1:1)}
 function calList(r,c,t){const m=matches(r,c,t),ul=$("tcal");
  let html=m.map(it=>`<li><button class="${it.type}" data-i="${it.i}"><span class="d">${fmt(it.date,{weekday:"short",month:"short",day:"numeric"})}</span><span>${esc(it.task)}</span></button></li>`).join("");
  if(!m.length)html=`<li class="none small">${NOTE[r]||"Not on the calendar yet."}</li>`;
