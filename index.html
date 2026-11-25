@@ -42,7 +42,7 @@ h1,h2,h3{font-family:var(--display);margin:0;text-wrap:balance}
 .today .ptitle{font:800 20px var(--display);letter-spacing:.02em;text-transform:uppercase}
 .panel.main{border-top-color:#1e9e5a}.panel.main .ptitle{color:#1e9e5a}
 .panel.pnext{border-top:4px solid #e67e00}.panel.pnext .ptitle{color:#e67e00}
-.panel.popen{border-top:4px solid #d92d2d}.panel.popen .ptitle,.panel.popen .count.warn{color:#d92d2d}
+.panel.popen{border-top:4px solid #d92d2d}.panel.popen .ptitle{color:#d92d2d}
 .today .count{font-size:14px;padding:2px 10px}
 .eyebrow{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
 .count{background:var(--line);color:var(--ink);border-radius:999px;padding:1px 8px;font-size:12px;letter-spacing:0}
@@ -258,7 +258,7 @@ table.ptab{border-collapse:collapse;width:100%;min-width:1100px;font-size:14px;l
  <section class="today" aria-label="Today">
   <div class="panel main"><div class="eyebrow ptitle">Today</div><h2 id="tdate"></h2><div id="tlist" class="scroll"></div></div>
   <div class="panel pnext"><h3 class="ptitle">Coming up</h3><div id="nlist" class="scroll"></div></div>
-  <div class="panel popen"><h3 class="ptitle">Still open <span class="count" id="ocount">0</span></h3><div id="olist" class="scroll"></div></div>
+  <div class="panel popen"><h3 class="ptitle" id="ltitle">Launching this month</h3><div id="olist" class="scroll"></div></div>
  </section>
 
  <div class="bar">
@@ -609,9 +609,14 @@ document.getElementById("tdate").textContent=fmt(TODAY,{weekday:"long",month:"lo
 document.getElementById("tlist").innerHTML=list(byDate[TODAY]);
 const days=[];{const d=toD(TODAY);let g=0;while(days.length<3&&g++<40){d.setDate(d.getDate()+1);const k=iso(d.getFullYear(),d.getMonth(),d.getDate());if(byDate[k]||d.getDay()%6)days.push(k)}}
 document.getElementById("nlist").innerHTML=days.map(k=>`<div class="daylabel">${fmt(k,{weekday:"long",month:"short",day:"numeric"})}</div>`+list(byDate[k])).join("");
-const open=ITEMS.filter(it=>it.date<TODAY&&!it.ms&&!["Done","Skip"].includes(it.status)).sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:0);
-const oc=document.getElementById("ocount");oc.textContent=open.length;if(open.length)oc.classList.add("warn");
-document.getElementById("olist").innerHTML=open.length?open.map(x=>task(x,true)).join(""):`<div class="none">All caught up.</div>`;
+/* Launching this month: every program and campaign that goes live in the month shown */
+const EXTRA=[["2026-12-08","Cabinet Sales","Cabinet sale launches: first email to all customers"],["2026-12-10","PFH Players","Play From Home SMS campaign goes out ($10 / $20 / $50 credits)"],["2026-12-17","PFH Kiosk","Teaser: kiosks and game boards coming in January"]];
+function launches(y,m){const pre=iso(y,m,1).slice(0,7),MN2=["January","February","March","April","May","June","July","August","September","October","November","December"];
+ document.getElementById("ltitle").textContent="Launching in "+MN2[m];
+ const ms=ITEMS.filter(it=>it.ms&&!it.end&&it.date.startsWith(pre)).map(it=>({date:it.date,type:it.type,what:name(it)+": goes live",i:it.i}));
+ const ex=EXTRA.filter(([d])=>d.startsWith(pre)).map(([d,g,w])=>({date:d,type:TYPE[g]||"plan",what:w,i:(ITEMS.find(it=>it.date==d&&it.game==g)||{}).i}));
+ const all=ms.concat(ex).sort((a,b)=>a.date<b.date?-1:1);
+ document.getElementById("olist").innerHTML=all.length?all.map(x=>`<div class="task ${x.type} tint"${x.i!=null?` data-i="${x.i}"`:""}><i class="dot"></i><div><div class="what">${esc(x.what)}</div><div class="who">${fmt(x.date,{weekday:"short",month:"short",day:"numeric"})}</div></div></div>`).join(""):`<div class="none">No launches this month.</div>`}
 
 /* Month grid */
 const MONTHS=[[2026,9],[2026,10],[2026,11],[2027,0],[2027,1],[2027,2],[2027,3]];
@@ -634,7 +639,7 @@ function render(k){
   });
   h+=`</div>`;
  }
- cal.innerHTML=h;applyFilters();
+ cal.innerHTML=h;applyFilters();launches(y,m);
 }
 MONTHS.forEach(([y,m],k)=>{const b=document.createElement("button");b.textContent=MN[m].slice(0,3)+" "+y;b.setAttribute("role","tab");b.onclick=()=>render(k);mb.appendChild(b)});
 let start=MONTHS.findIndex(([y,m])=>TODAY.slice(0,7)==iso(y,m,1).slice(0,7));if(start<0)start=TODAY<"2026-10-01"?0:MONTHS.length-1;
